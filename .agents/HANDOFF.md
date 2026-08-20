@@ -1,51 +1,51 @@
 # Handoff — Creative CTRL Collective
 
-**Updated:** 2026-08-20T05:45Z  
+**Updated:** 2026-08-20T06:20Z  
 **Agent:** grok  
-**Slice:** 1 (scaffold) → complete; current target is **2**  
-**Proof:** `npm run build` (`tsc -b && vite build`) succeeded; `npm run lint` 0 issues; `vite preview` at `http://127.0.0.1:4173/` served title `Creative CTRL Collective` and bundled copy.
+**Slice:** 2 (design system) → complete; current target is **3**  
+**Proof:** `npm run build` + `npm run lint` (0 issues). Screenshots: `.agents/proof/slice-2-desktop.png` (1440×2400), `.agents/proof/slice-2-mobile.png` (390×2600).
 
 ---
 
 ## Done — do not undo
 
 - Repo-canonical memory (Slice 0).
-- Dedicated Collective Supabase project in `.env.local` (`kvakftkmvqsfoinzzqav`). Not ArtSpace.
-- Vite + React 19 + TypeScript + Tailwind v4 (`@tailwindcss/vite`) scaffold. Package name `creative-ctrl-collective`.
-- `netlify.toml` SPA fallback (`/*` → `/index.html` 200).
-- Client env types: `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` only. No `VITE_GEMINI_API_KEY` in `.env.local`.
-- Placeholder `src/App.tsx` is a dark landing stub, not the Vite starter and not the design system.
+- Vite + React 19 + TS + Tailwind v4 + Netlify SPA (Slice 1). No `VITE_GEMINI_API_KEY`.
+- Design tokens in `src/index.css` (`void`, `surface`, `raised`, `line`, `paper`, `mute`, `signal`, `alert`; `font-display` / `font-sans` = Bricolage Grotesque; `font-mono` = IBM Plex Mono).
+- Primitives: `SiteChrome` (grain + glow), `Button` (primary/ghost/partner), `MediaGrid` / `MediaTile`.
+- Kitchen sink is currently `App` → `TokenKitchenSink`. Slice 4 replaces it with Hero; keep the primitives and tokens.
 
 ## Next (exactly one primary task)
 
-**Slice 2 — Design system.** Dark mode, grotesque display type, monospace accents, grain overlay, ambient glow, media-grid primitives. Tokens in CSS (not one-off in Hero). Kitchen-sink page is enough; no real content. Prove with desktop + mobile screenshots of the token page.
+**Slice 3 — Schema completion.** Migrations against Collective project `kvakftkmvqsfoinzzqav`. Finish truncated RLS in `Plan.md`. Add portal tables (`governance_documents`, `project_ledgers`, `production_schedules`), buckets (`public-media`, `partner-docs`), and a partner bootstrap/allowlist. No `db reset` on remote. Record the invite mechanism in `DECISIONS.md`. Prove with the migration SQL + a Table Editor or dry-run note in HANDOFF.
 
 ## Blocked
 
-- None for Slice 2.
+- None for Slice 3. Needs Supabase CLI access / dashboard for the remote project.
 
 ## Do not
 
-- Touch ArtSpace (`baixjfnlxcupgnzrmbno`, `artspace.creativectrl.org`).
+- Touch ArtSpace (`baixjfnlxcupgnzrmbno`).
 - `supabase db reset` / destructive remote SQL.
-- Commit `.env.local` or put secrets in markdown.
-- Add `VITE_GEMINI_API_KEY` (or any LLM key) to client env.
-- Scaffold Stripe / first-party ticketing (`ticket_link` only).
-- Start Slice 3+ in the same session unless the user asks to continue.
-- Wire Supabase client or schema yet (Slice 3).
-- Re-open ArtSpace vault, CORS, or profile work from this repo.
+- Commit `.env.local` or secrets.
+- Client LLM keys (`VITE_*`).
+- First-party ticketing.
+- Start Slice 4+ unless asked.
+- Restyle by hardcoding colors in views — use tokens.
+- Re-open ArtSpace vault / CORS / profile work.
 
 ## Files touched
 
-- `package.json`, `package-lock.json`, `vite.config.ts`, `index.html`, `tsconfig*.json`, `.oxlintrc.json`, `netlify.toml`, `.gitignore`
-- `src/main.tsx`, `src/App.tsx`, `src/index.css`, `src/vite-env.d.ts`
-- `public/favicon.svg`
-- `.agents/HANDOFF.md`, `.agents/ROADMAP.md`
+- `src/index.css`, `src/App.tsx`, `index.html`, `public/favicon.svg`
+- `src/components/{SiteChrome,Button,MediaGrid}.tsx`
+- `src/pages/TokenKitchenSink.tsx`
+- `.agents/proof/slice-2-{desktop,mobile}.png`
+- `.agents/HANDOFF.md`, `ROADMAP.md`, `DECISIONS.md`
 
 ## Read-first (ordered)
 
 1. This file
-2. `.agents/ROADMAP.md` (Slice 2 only)
-3. `src/index.css` + `src/App.tsx` (current stub)
-4. `Plan.md` §3 Design System (aesthetic only)
-5. `AGENTS.md`
+2. `.agents/ROADMAP.md` (Slice 3 only)
+3. `Plan.md` schema (truncated — do not migrate verbatim)
+4. `.agents/DECISIONS.md` (portal tables + isolation)
+5. `src/index.css` (tokens to keep)

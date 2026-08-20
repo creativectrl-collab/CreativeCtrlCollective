@@ -45,3 +45,9 @@ Append-only. Each entry: date, decision, why, rejected alternative.
 **Decision:** Slice 3 must add `governance_documents`, `project_ledgers`, and `production_schedules` (names may vary) plus storage buckets. Plan.md SQL is truncated and only covers `profiles`, `initiatives`, `inquiries`.  
 **Why:** The UX section requires those portal surfaces; implementing Plan.md SQL as-is would ship a portal with nowhere to store data.  
 **Rejected:** Migrating Plan.md SQL verbatim.
+
+## 2026-08-20 — Collective visual language
+
+**Decision:** Tokens live in `src/index.css` (`@theme`). Display/body is Bricolage Grotesque; kickers/data are IBM Plex Mono. Palette: `void` `#08080c`, `paper` `#f1eee6`, `signal` `#d4ff3f`, `alert` `#ff4d8d`, plus `surface` / `raised` / `line` / `mute`. Grain + ambient glow are CSS utilities consumed via `SiteChrome`.  
+**Why:** Plan.md asks for dark grotesque, mono accents, grain/glow, and media grids. Distinct from ArtSpace Clash Grotesk so the Collective is a sibling brand, not a clone.  
+**Rejected:** Reusing ArtSpace Clash Grotesk / `#1a1a1a` / blue accent. Rejected one-off colors in the Hero.

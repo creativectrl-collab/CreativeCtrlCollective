@@ -6,8 +6,8 @@
 |-------|--------|--------|
 | 0 | done | Agent memory (this layer) |
 | 1 | done | Scaffold + env hygiene (Vite/React/TS, Tailwind, Netlify, no `VITE_GEMINI_API_KEY`) |
-| 2 | in-progress | Design system (dark, grotesque, grain/glow, media-grid tokens) |
-| 3 | todo | Schema completion (finish truncated RLS; portal tables; buckets; partner bootstrap) |
+| 2 | done | Design system (dark, grotesque, grain/glow, media-grid tokens) |
+| 3 | in-progress | Schema completion (finish truncated RLS; portal tables; buckets; partner bootstrap) |
 | 4 | todo | Public shell + Hero / Manifesto |
 | 5 | todo | Initiatives & Showcase (`/initiatives`, `/initiatives/:slug`) |
 | 6 | todo | Team / Roster (founding partners only) |
