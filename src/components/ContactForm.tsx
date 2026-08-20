@@ -1,21 +1,54 @@
 import { useState, type FormEvent } from 'react'
 import { site } from '../content/site'
 import { Button } from './Button'
+import { supabase } from '../lib/supabase'
 
 export function ContactForm() {
-  const [sent, setSent] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [success, setSuccess] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
-  function onSubmit(event: FormEvent<HTMLFormElement>) {
+  async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
+    setLoading(true)
+    setError(null)
+    
     const form = event.currentTarget
     const data = new FormData(form)
     const name = String(data.get('name') ?? '')
     const email = String(data.get('email') ?? '')
     const message = String(data.get('message') ?? '')
-    const subject = encodeURIComponent(`Creative CTRL Collective — ${name}`)
-    const body = encodeURIComponent(`From: ${name} <${email}>\n\n${message}`)
-    window.location.href = `mailto:${site.email}?subject=${subject}&body=${body}`
-    setSent(true)
+    const inquiryType = String(data.get('inquiry_type') ?? 'general')
+    const consent = data.get('consent') === 'on'
+
+    try {
+      // 1. Persist to Supabase
+      const { error: dbError } = await supabase
+        .from('community_members')
+        .insert([{
+          full_name: name,
+          email,
+          inquiry_type: inquiryType,
+          notes: message,
+          casl_consent_given: consent,
+          consent_source: 'contact_form'
+        }])
+
+      if (dbError) throw dbError
+
+      // 2. Fallback mailto (per requirements until Slice 7)
+      const subject = encodeURIComponent(`Creative CTRL Collective — ${name} (${inquiryType})`)
+      const body = encodeURIComponent(`From: ${name} <${email}>\n\n${message}`)
+      window.location.href = `mailto:${site.email}?subject=${subject}&body=${body}`
+      
+      setSuccess(true)
+      form.reset()
+    } catch (e) {
+      console.error(e)
+      setError('Something went wrong. Please try again.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -40,6 +73,18 @@ export function ContactForm() {
         />
       </label>
       <label className="flex flex-col gap-2">
+        <span className="font-mono text-kicker uppercase text-mute">Inquiry Type</span>
+        <select
+          name="inquiry_type"
+          className="border border-line bg-surface px-4 py-3 text-paper outline-none focus:border-signal"
+        >
+          <option value="general">General</option>
+          <option value="artist_submission">Artist Submission</option>
+          <option value="booking">Booking</option>
+          <option value="sponsor">Sponsor</option>
+        </select>
+      </label>
+      <label className="flex flex-col gap-2">
         <span className="font-mono text-kicker uppercase text-mute">Message</span>
         <textarea
           required
@@ -48,9 +93,25 @@ export function ContactForm() {
           placeholder="Tell us what you are building"
         />
       </label>
-      <Button type="submit">Send</Button>
-      {sent ? (
-        <p className="font-mono text-xs text-signal">Thank you — your mail client should open.</p>
+      <label className="flex items-center gap-2">
+        <input
+          required
+          type="checkbox"
+          name="consent"
+          className="accent-signal"
+        />
+        <span className="font-mono text-xs text-mute">
+          I consent to receive communication from Creative CTRL Collective.
+        </span>
+      </label>
+      <Button type="submit" disabled={loading}>
+        {loading ? 'Sending...' : 'Send'}
+      </Button>
+      {success ? (
+        <p className="font-mono text-xs text-signal">Thank you — inquiry saved and mail client opened.</p>
+      ) : null}
+      {error ? (
+        <p className="font-mono text-xs text-error">{error}</p>
       ) : null}
     </form>
   )

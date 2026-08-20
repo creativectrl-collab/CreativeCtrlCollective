@@ -41,11 +41,11 @@ export function HomePage() {
 
       <section className="mx-auto max-w-6xl px-6 py-16 md:px-10">
         <p className="font-mono text-kicker uppercase text-mute">01 — Latest</p>
-        <div className="mt-6 grid items-start gap-8 md:grid-cols-2">
+        <div className="mt-6 flex flex-col items-start gap-8 md:flex-row">
           <img
             src={events.latest.image}
             alt={events.latest.title}
-            className="w-full border border-line bg-surface"
+            className="w-full border border-line bg-surface md:w-1/2"
           />
           <div>
             <p className="font-mono text-kicker uppercase text-signal">
@@ -67,7 +67,7 @@ export function HomePage() {
       <section className="pb-16">
         <div className="mx-auto max-w-6xl px-6 md:px-10">
           <p className="mb-6 font-mono text-kicker uppercase text-mute">
-            02 — Scenes from past events
+            02 — Event Gallery
           </p>
         </div>
         <MediaGrid>
