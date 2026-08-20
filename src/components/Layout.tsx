@@ -1,6 +1,6 @@
-import { useEffect } from 'react'
-import { NavLink, Outlet, useLocation } from 'react-router-dom'
+import { NavLink, Outlet } from 'react-router-dom'
 import { site } from '../content/site'
+import { Seo } from './Seo'
 import { SiteChrome } from './SiteChrome'
 
 const nav = [
@@ -11,19 +11,9 @@ const nav = [
 ] as const
 
 export function Layout() {
-  const location = useLocation()
-
-  useEffect(() => {
-    const titles: Record<string, string> = {
-      '/': site.name,
-      '/events': `Events — ${site.name}`,
-      '/team': `Team — ${site.name}`,
-    }
-    document.title = titles[location.pathname] ?? site.name
-  }, [location.pathname])
-
   return (
     <SiteChrome>
+      <Seo />
       <header className="sticky top-0 z-20 border-b border-line bg-void/80 backdrop-blur-md">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-4 md:px-10">
           <NavLink to="/" className="flex min-w-0 items-center gap-3">

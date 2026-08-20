@@ -1,8 +1,14 @@
+import { Seo } from '../components/Seo'
 import { team } from '../content/site'
 
 export function TeamPage() {
   return (
     <main className="mx-auto max-w-6xl px-6 py-16 md:px-10 md:py-20">
+      <Seo
+        title="Team"
+        description="Founding partners of Creative Ctrl Collective — visual practice, story, and sound in Toronto."
+        path="/team"
+      />
       <p className="font-mono text-kicker uppercase text-signal">Roster</p>
       <h1 className="mt-4 font-display text-display text-paper">Team</h1>
       <p className="mt-4 max-w-xl text-mute">

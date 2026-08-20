@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /tokens
+
+Sitemap: https://www.creativectrlcollective.org/sitemap.xml

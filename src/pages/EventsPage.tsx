@@ -1,8 +1,14 @@
+import { Seo } from '../components/Seo'
 import { events } from '../content/site'
 
 export function EventsPage() {
   return (
     <main className="mx-auto max-w-6xl px-6 py-16 md:px-10 md:py-20">
+      <Seo
+        title="Events"
+        description="Live cultural events, exhibitions, and community sessions from Creative Ctrl Collective in Toronto and beyond."
+        path="/events"
+      />
       <p className="font-mono text-kicker uppercase text-signal">Archive</p>
       <h1 className="mt-4 font-display text-display text-paper">Events</h1>
       <p className="mt-4 max-w-xl text-mute">

@@ -1,5 +1,6 @@
 import { Button } from '../components/Button'
 import { MediaGrid, MediaTile } from '../components/MediaGrid'
+import { Seo } from '../components/Seo'
 import { SiteChrome } from '../components/SiteChrome'
 
 const swatches = [
@@ -16,6 +17,7 @@ const swatches = [
 export function TokenKitchenSink() {
   return (
     <SiteChrome>
+      <Seo title="Design tokens" path="/tokens" noIndex />
       <header className="flex items-end justify-between gap-6 border-b border-line px-6 py-6 md:px-10">
         <div>
           <p className="font-mono text-kicker uppercase text-signal">
