@@ -1,0 +1,20 @@
+# Secrets
+.env
+.env.local
+.env.*.local
+
+# Dependencies and build
+node_modules/
+dist/
+.vite/
+coverage/
+
+# Hosting
+.netlify/
+
+# OS / editor
+.DS_Store
+*.log
+.idea/
+.vscode/
+*.swp
