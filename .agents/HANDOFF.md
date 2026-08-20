@@ -1,54 +1,45 @@
 # Handoff — Creative CTRL Collective
 
-**Updated:** 2026-08-20T06:20Z  
+**Updated:** 2026-08-20T06:40Z  
 **Agent:** grok  
-**Slice:** 2 (design system) → complete; current target is **3**  
-**Proof:** `npm run build` + `npm run lint` (0 issues). Screenshots: `.agents/proof/slice-2-desktop.png` (1440×2400), `.agents/proof/slice-2-mobile.png` (390×2600).  
-**Repo:** https://github.com/creativectrl-collab/CreativeCtrlCollective (`dev` working branch; merge `main` for Netlify).  
+**Slice:** public pages from existing Creative CTRL site → complete; current target is **3**  
+**Proof:** `npm run lint` 0 issues. Dev server http://127.0.0.1:5173/ — `/`, `/events`, `/team`. Kitchen sink at `/tokens`.  
+**Repo:** https://github.com/creativectrl-collab/CreativeCtrlCollective (`dev` working branch).  
 **GitHub account for this repo:** `creativectrl-collab` (not `ucheothniel`).
 
 ---
 
 ## Done — do not undo
 
-- GitHub: `creativectrl-collab/CreativeCtrlCollective`. Work on `dev`. Push as `creativectrl-collab`.
-- Repo-canonical memory (Slice 0).
-- Vite + React 19 + TS + Tailwind v4 + Netlify SPA (Slice 1). No `VITE_GEMINI_API_KEY`.
-- Design tokens in `src/index.css` (`void`, `surface`, `raised`, `line`, `paper`, `mute`, `signal`, `alert`; `font-display` / `font-sans` = Bricolage Grotesque; `font-mono` = IBM Plex Mono).
-- Primitives: `SiteChrome` (grain + glow), `Button` (primary/ghost/partner), `MediaGrid` / `MediaTile`.
-- Kitchen sink is currently `App` → `TokenKitchenSink`. Slice 4 replaces it with Hero; keep the primitives and tokens.
+- GitHub collab remote. Work on `dev`. Push as `creativectrl-collab`.
+- Design tokens in `src/index.css`. Do not restyle by hardcoding colours.
+- Public IA from saskymalimusic.com/creative-ctrl: Home (manifesto + latest event + scene grid + contact), `/events`, `/team`. Copy from those pages + About (mission/vision/objectives). Visual language stays Collective, not WordPress Poppins/pink, not ArtSpace.
+- Contact form is a **mailto stub** to `contact@creativectrlcollective.org` until Slice 7.
+- Token kitchen sink lives at `/tokens`.
 
 ## Next (exactly one primary task)
 
-**Slice 3 — Schema completion.** Migrations against Collective project `kvakftkmvqsfoinzzqav`. Finish truncated RLS in `Plan.md`. Add portal tables (`governance_documents`, `project_ledgers`, `production_schedules`), buckets (`public-media`, `partner-docs`), and a partner bootstrap/allowlist. No `db reset` on remote. Record the invite mechanism in `DECISIONS.md`. Prove with the migration SQL + a Table Editor or dry-run note in HANDOFF.
+**Slice 3 — Schema completion.** Migrations on Collective Supabase `kvakftkmvqsfoinzzqav`. Finish truncated RLS. Add portal tables + buckets. Do not `db reset` remote. Public pages can stay static until events/team are wired.
 
 ## Blocked
 
-- None for Slice 3. Needs Supabase CLI access / dashboard for the remote project.
+- None for Slice 3 besides dashboard/CLI access.
 
 ## Do not
 
-- Touch ArtSpace (`baixjfnlxcupgnzrmbno`).
-- `supabase db reset` / destructive remote SQL.
-- Commit `.env.local` or secrets.
-- Client LLM keys (`VITE_*`).
-- First-party ticketing.
-- Start Slice 4+ unless asked.
-- Restyle by hardcoding colors in views — use tokens.
-- Re-open ArtSpace vault / CORS / profile work.
+- ArtSpace project. Remote `db reset`. Commit `.env.local`. Client LLM keys. First-party ticketing. Copy ArtSpace Clash Grotesk / vault UI.
 
 ## Files touched
 
-- `src/index.css`, `src/App.tsx`, `index.html`, `public/favicon.svg`
-- `src/components/{SiteChrome,Button,MediaGrid}.tsx`
-- `src/pages/TokenKitchenSink.tsx`
-- `.agents/proof/slice-2-{desktop,mobile}.png`
-- `.agents/HANDOFF.md`, `ROADMAP.md`, `DECISIONS.md`
+- `src/content/site.ts`, `src/App.tsx`
+- `src/pages/{HomePage,EventsPage,TeamPage}.tsx`
+- `src/components/{Layout,ContactForm,control,MediaGrid,Button}.tsx`
+- `public/media/**` (logo, posters, scenes, team)
+- `.agents/HANDOFF.md`, `ROADMAP.md`
 
 ## Read-first (ordered)
 
 1. This file
-2. `.agents/ROADMAP.md` (Slice 3 only)
-3. `Plan.md` schema (truncated — do not migrate verbatim)
-4. `.agents/DECISIONS.md` (portal tables + isolation)
-5. `src/index.css` (tokens to keep)
+2. `src/content/site.ts`
+3. `src/index.css`
+4. `.agents/ROADMAP.md` (Slice 3)
