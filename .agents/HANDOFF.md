@@ -4,13 +4,14 @@
 **Agent:** grok  
 **Slice:** 2 (design system) → complete; current target is **3**  
 **Proof:** `npm run build` + `npm run lint` (0 issues). Screenshots: `.agents/proof/slice-2-desktop.png` (1440×2400), `.agents/proof/slice-2-mobile.png` (390×2600).  
-**Repo:** https://github.com/ucheothniel/creative-ctrl-collective (`dev` working branch; merge `main` for Netlify).
+**Repo:** https://github.com/creativectrl-collab/CreativeCtrlCollective (`dev` working branch; merge `main` for Netlify).  
+**GitHub account for this repo:** `creativectrl-collab` (not `ucheothniel`).
 
 ---
 
 ## Done — do not undo
 
-- GitHub: `ucheothniel/creative-ctrl-collective` (private). Work on `dev`.
+- GitHub: `creativectrl-collab/CreativeCtrlCollective`. Work on `dev`. Push as `creativectrl-collab`.
 - Repo-canonical memory (Slice 0).
 - Vite + React 19 + TS + Tailwind v4 + Netlify SPA (Slice 1). No `VITE_GEMINI_API_KEY`.
 - Design tokens in `src/index.css` (`void`, `surface`, `raised`, `line`, `paper`, `mute`, `signal`, `alert`; `font-display` / `font-sans` = Bricolage Grotesque; `font-mono` = IBM Plex Mono).
