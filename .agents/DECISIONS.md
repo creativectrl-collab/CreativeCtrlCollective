@@ -6,7 +6,7 @@ Append-only. Each entry: date, decision, why, rejected alternative.
 
 ## 2026-08-19 — Dedicated Supabase project
 
-**Decision:** Collective uses its own Supabase project (`kvakftkmvqsfoinzzqav`).  
+**Decision:** Collective uses its own Supabase project (`xzfdmrjxwkcxdcbqvwbd`).  
 **Why:** ArtSpace is a sole-prop asset; the Collective is multi-partner. Shared tables, buckets, keys, or OAuth clients mix ownership.  
 **Rejected:** Reuse ArtSpace project `baixjfnlxcupgnzrmbno`.
 

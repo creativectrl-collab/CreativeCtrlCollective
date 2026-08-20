@@ -22,7 +22,7 @@ export const events = {
     date: 'Sunday 18 May 2025 · 5:45–8:45pm',
     venue: '303 Ottawa Street North, Hamilton',
     note: 'A mint event: curated art exhibition and wine tasting. Tickets $20.',
-    image: '/media/events/latest.png',
+    image: 'https://xzfdmrjxwkcxdcbqvwbd.supabase.co/storage/v1/object/public/public-media/events/latest.png',
   },
   past: [
     {
@@ -32,7 +32,7 @@ export const events = {
       date: '7–28 March',
       venue: 'BSTO · 1310 St. Clair Avenue West, Toronto',
       note: 'Portraits of Innocence. Opening reception 7 March.',
-      image: '/media/events/celeb-kids-2.png',
+      image: 'https://xzfdmrjxwkcxdcbqvwbd.supabase.co/storage/v1/object/public/public-media/events/celeb-kids-2.png',
     },
     {
       slug: 'celeb-kids-closing',
@@ -41,7 +41,7 @@ export const events = {
       date: '28 March · 8pm–late',
       venue: 'BSTO · 1310 St. Clair Avenue West, Toronto',
       note: 'Special performance by Sasky Mali, DJ Daddy Yo & more. $20.',
-      image: '/media/events/celeb-kids-1.png',
+      image: 'https://xzfdmrjxwkcxdcbqvwbd.supabase.co/storage/v1/object/public/public-media/events/celeb-kids-1.png',
     },
     {
       slug: 'crafting-our-legacy',
@@ -50,18 +50,18 @@ export const events = {
       date: 'Saturday 1 February',
       venue: 'Airoli · 334 Queen Street West, Toronto',
       note: 'Art exhibition with Look It’s Kam & friends. $10 advance / $15 door.',
-      image: '/media/events/colour-of-love.png',
+      image: 'https://xzfdmrjxwkcxdcbqvwbd.supabase.co/storage/v1/object/public/public-media/events/colour-of-love.png',
     },
   ],
 } as const
 
 export const scenes = [
-  '/media/scenes/01.jpg',
-  '/media/scenes/02.jpg',
-  '/media/scenes/03.jpg',
-  '/media/scenes/04.jpg',
-  '/media/scenes/05.jpg',
-  '/media/scenes/06.jpg',
+  'https://xzfdmrjxwkcxdcbqvwbd.supabase.co/storage/v1/object/public/public-media/scenes/01.jpg',
+  'https://xzfdmrjxwkcxdcbqvwbd.supabase.co/storage/v1/object/public/public-media/scenes/02.jpg',
+  'https://xzfdmrjxwkcxdcbqvwbd.supabase.co/storage/v1/object/public/public-media/scenes/03.jpg',
+  'https://xzfdmrjxwkcxdcbqvwbd.supabase.co/storage/v1/object/public/public-media/scenes/04.jpg',
+  'https://xzfdmrjxwkcxdcbqvwbd.supabase.co/storage/v1/object/public/public-media/scenes/05.jpg',
+  'https://xzfdmrjxwkcxdcbqvwbd.supabase.co/storage/v1/object/public/public-media/scenes/06.jpg',
 ] as const
 
 export const team = [
@@ -69,7 +69,7 @@ export const team = [
     slug: 'kamorudeen',
     name: 'Kamorudeen Toluwani Aruna',
     role: 'Visual artist · photographer',
-    image: '/media/team/kamorudeen.jpg',
+    image: 'https://xzfdmrjxwkcxdcbqvwbd.supabase.co/storage/v1/object/public/public-media/team/kamorudeen.jpg',
     bio: [
       'Emerging visual artist and photographer from Lagos, Nigeria, with a Fine Arts Studio diploma from Centennial College in Toronto.',
       'Passionate about colour, form, and shape, his work captures everyday emotion — blending cultural influence with contemporary form. Surrealistic storytelling, often through children, traces innocence, joy, and complexity.',
@@ -85,7 +85,7 @@ export const team = [
     slug: 'kelly',
     name: 'Kelly Ugwu',
     role: 'Content · DJ · storyteller',
-    image: '/media/team/kelly.jpg',
+    image: 'https://xzfdmrjxwkcxdcbqvwbd.supabase.co/storage/v1/object/public/public-media/team/kelly.jpg',
     bio: [
       'Dynamic content creator and storyteller working for cultural impact through music, conversation, and narrative. YouTuber, DJ, and podcaster — blending entertainment with insight.',
       'Whether curating a vibe, producing video, or hosting dialogue, the mission is to inspire, engage, and uplift.',
@@ -101,7 +101,7 @@ export const team = [
     slug: 'sasky',
     name: 'Sasky Mali',
     role: 'Afro-fusion · producer · DJ',
-    image: '/media/team/sasky.jpg',
+    image: 'https://xzfdmrjxwkcxdcbqvwbd.supabase.co/storage/v1/object/public/public-media/team/sasky.jpg',
     bio: [
       'Uche Osakwe, known as Sasky Mali — Nigerian-born Afro-fusion artist, producer, and DJ based in Toronto.',
       'Music is the tool: speaking to the society he was born into and the one he lives in now, with the aim of moving a broad audience of passionate listeners, one sound at a time.',

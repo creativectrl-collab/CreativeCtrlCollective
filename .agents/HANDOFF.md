@@ -21,7 +21,7 @@
 
 ## Next (exactly one primary task)
 
-**Slice 3 — Schema completion.** Dedicated Supabase `kvakftkmvqsfoinzzqav`. Finish truncated Plan.md RLS. Add portal tables (`governance_documents`, `project_ledgers`, `production_schedules`) and buckets (`public-media`, `partner-docs`). No remote `db reset`. Public pages stay static until wired.
+**Slice 3 — Schema completion.** Dedicated Supabase `xzfdmrjxwkcxdcbqvwbd`. Finish truncated Plan.md RLS. Add portal tables (`governance_documents`, `project_ledgers`, `production_schedules`) and buckets (`public-media`, `partner-docs`). No remote `db reset`. Public pages stay static until wired.
 
 ## Blocked
 

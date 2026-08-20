@@ -2,7 +2,7 @@
 
 Digital hub for Creative CTRL Collective. Separate legal entity from ArtSpace.
 
-**Stack:** Vite + React + TypeScript, Tailwind, Supabase project `kvakftkmvqsfoinzzqav`, Netlify, domain `creativectrlcollective.org`, inbound `contact@creativectrlcollective.org`.
+**Stack:** Vite + React + TypeScript, Tailwind, Supabase project `xzfdmrjxwkcxdcbqvwbd`, Netlify, domain `creativectrlcollective.org`, inbound `contact@creativectrlcollective.org`.
 
 ## Pickup (required)
 
