@@ -1,5 +1,5 @@
 export const site = {
-  name: 'Creative CTRL',
+  name: 'Creative CTRL Collective',
   instagram: 'https://www.instagram.com/creativectrl_org/',
   email: 'contact@creativectrlcollective.org',
   mission:

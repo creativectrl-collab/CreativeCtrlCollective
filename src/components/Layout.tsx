@@ -1,4 +1,5 @@
-import { NavLink, Outlet } from 'react-router-dom'
+import { useEffect } from 'react'
+import { NavLink, Outlet, useLocation } from 'react-router-dom'
 import { site } from '../content/site'
 import { SiteChrome } from './SiteChrome'
 
@@ -10,6 +11,17 @@ const nav = [
 ] as const
 
 export function Layout() {
+  const location = useLocation()
+
+  useEffect(() => {
+    const titles: Record<string, string> = {
+      '/': site.name,
+      '/events': `Events — ${site.name}`,
+      '/team': `Team — ${site.name}`,
+    }
+    document.title = titles[location.pathname] ?? site.name
+  }, [location.pathname])
+
   return (
     <SiteChrome>
       <header className="sticky top-0 z-20 border-b border-line bg-void/80 backdrop-blur-md">
@@ -18,7 +30,7 @@ export function Layout() {
             <span className="flex size-10 shrink-0 items-center justify-center bg-paper">
               <img src="/media/logo.png" alt="" className="h-7 w-7 object-contain" />
             </span>
-            <span className="font-display text-sm font-bold tracking-tight text-paper md:text-base">
+            <span className="min-w-0 font-display text-xs font-bold leading-tight tracking-tight text-paper sm:text-sm md:text-base">
               {site.name}
             </span>
           </NavLink>

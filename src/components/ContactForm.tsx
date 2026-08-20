@@ -12,7 +12,7 @@ export function ContactForm() {
     const name = String(data.get('name') ?? '')
     const email = String(data.get('email') ?? '')
     const message = String(data.get('message') ?? '')
-    const subject = encodeURIComponent(`Creative CTRL — ${name}`)
+    const subject = encodeURIComponent(`Creative CTRL Collective — ${name}`)
     const body = encodeURIComponent(`From: ${name} <${email}>\n\n${message}`)
     window.location.href = `mailto:${site.email}?subject=${subject}&body=${body}`
     setSent(true)

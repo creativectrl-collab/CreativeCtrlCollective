@@ -1,41 +1,42 @@
 # Handoff — Creative CTRL Collective
 
-**Updated:** 2026-08-20T06:40Z  
+**Updated:** 2026-08-20T07:05Z  
 **Agent:** grok  
-**Slice:** public pages from existing Creative CTRL site → complete; current target is **3**  
-**Proof:** `npm run lint` 0 issues. Dev server http://127.0.0.1:5173/ — `/`, `/events`, `/team`. Kitchen sink at `/tokens`.  
-**Repo:** https://github.com/creativectrl-collab/CreativeCtrlCollective (`dev` working branch).  
-**GitHub account for this repo:** `creativectrl-collab` (not `ucheothniel`).
+**Slice:** public pages + site title → complete; current target is **3**  
+**Proof:** `npm run lint` 0 issues. Title is `Creative CTRL Collective` in `index.html`, `site.name`, nav, footer, and document.title. Dev: http://127.0.0.1:5173/  
+**Repo:** https://github.com/creativectrl-collab/CreativeCtrlCollective (`dev`). Push as `creativectrl-collab`.
 
 ---
 
 ## Done — do not undo
 
-- GitHub collab remote. Work on `dev`. Push as `creativectrl-collab`.
-- Design tokens in `src/index.css`. Do not restyle by hardcoding colours.
-- Public IA from saskymalimusic.com/creative-ctrl: Home (manifesto + latest event + scene grid + contact), `/events`, `/team`. Copy from those pages + About (mission/vision/objectives). Visual language stays Collective, not WordPress Poppins/pink, not ArtSpace.
-- Contact form is a **mailto stub** to `contact@creativectrlcollective.org` until Slice 7.
-- Token kitchen sink lives at `/tokens`.
+- Shared memory, tokens, Vite scaffold. Not ArtSpace.
+- Public site from saskymalimusic.com/creative-ctrl mapped onto Collective tokens:
+  - `/` manifesto, latest event (With OBAFS), scene grid, mailto contact
+  - `/events` latest + Celeb Kids + Crafting Our Legacy
+  - `/team` Kamorudeen, Kelly Ugwu, Sasky Mali
+  - `/tokens` kitchen sink
+- Site title **Creative CTRL Collective** (no longer short “Creative CTRL”).
+- Contact is mailto to `contact@creativectrlcollective.org` until Slice 7.
 
 ## Next (exactly one primary task)
 
-**Slice 3 — Schema completion.** Migrations on Collective Supabase `kvakftkmvqsfoinzzqav`. Finish truncated RLS. Add portal tables + buckets. Do not `db reset` remote. Public pages can stay static until events/team are wired.
+**Slice 3 — Schema completion.** Dedicated Supabase `kvakftkmvqsfoinzzqav`. Finish truncated Plan.md RLS. Add portal tables (`governance_documents`, `project_ledgers`, `production_schedules`) and buckets (`public-media`, `partner-docs`). No remote `db reset`. Public pages stay static until wired.
 
 ## Blocked
 
-- None for Slice 3 besides dashboard/CLI access.
+- Slice 3 needs Supabase CLI / dashboard access.
 
 ## Do not
 
-- ArtSpace project. Remote `db reset`. Commit `.env.local`. Client LLM keys. First-party ticketing. Copy ArtSpace Clash Grotesk / vault UI.
+- ArtSpace project (`baixjfnlxcupgnzrmbno`). Remote db reset. Commit `.env.local`. `VITE_` LLM keys. First-party ticketing. Restyle off-tokens. Copy WordPress Poppins/pink or ArtSpace UI.
 
 ## Files touched
 
-- `src/content/site.ts`, `src/App.tsx`
-- `src/pages/{HomePage,EventsPage,TeamPage}.tsx`
-- `src/components/{Layout,ContactForm,control,MediaGrid,Button}.tsx`
-- `public/media/**` (logo, posters, scenes, team)
-- `.agents/HANDOFF.md`, `ROADMAP.md`
+- `src/content/site.ts` (`name: 'Creative CTRL Collective'`)
+- `src/components/Layout.tsx` (nav wordmark + per-route `document.title`)
+- `src/components/ContactForm.tsx` (mail subject)
+- `.agents/HANDOFF.md`
 
 ## Read-first (ordered)
 
