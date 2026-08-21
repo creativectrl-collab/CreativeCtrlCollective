@@ -50,7 +50,7 @@ export function EventsManager() {
 
   return (
     <div className="grid gap-12">
-      <form onSubmit={handleCreate} className="grid gap-4 p-6 border border-line bg-surface">
+      <form onSubmit={handleCreate} className="grid gap-4 p-4 border border-line bg-surface md:p-6">
         <h2 className="text-lg text-paper">Create Event</h2>
         <input placeholder="Title" value={title} onChange={e => setTitle(e.target.value)} className="bg-void p-2 border border-line text-paper" />
         <input type="datetime-local" value={date} onChange={e => setDate(e.target.value)} className="bg-void p-2 border border-line text-paper" />

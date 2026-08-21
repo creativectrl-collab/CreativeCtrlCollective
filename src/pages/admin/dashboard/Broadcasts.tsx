@@ -40,7 +40,7 @@ export function BroadcastsManager() {
 
   return (
     <div className="grid gap-12">
-      <div className="grid gap-4 p-6 border border-line bg-surface">
+      <div className="grid gap-4 p-4 border border-line bg-surface md:p-6">
         <h2 className="text-lg text-paper">Create Campaign</h2>
         <p className="text-mute">Targeting {recipientCount} CASL-compliant recipients.</p>
         <input placeholder="Subject" value={subject} onChange={e => setSubject(e.target.value)} className="bg-void p-2 border border-line text-paper" />

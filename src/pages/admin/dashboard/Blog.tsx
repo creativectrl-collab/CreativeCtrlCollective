@@ -47,7 +47,7 @@ export function BlogManager() {
 
   return (
     <div className="grid gap-12">
-      <div className="grid gap-4 p-6 border border-line bg-surface">
+      <div className="grid gap-4 p-4 border border-line bg-surface md:p-6">
         <h2 className="text-lg text-paper">Create Post</h2>
         <input placeholder="Title" value={title} onChange={e => setTitle(e.target.value)} className="bg-void p-2 border border-line text-paper" />
         <select value={category} onChange={e => setCategory(e.target.value)} className="bg-void p-2 border border-line text-paper">

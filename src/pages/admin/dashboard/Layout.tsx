@@ -12,7 +12,7 @@ export function DashboardLayout() {
   
   return (
     <AdminGuard>
-      <div className="mx-auto max-w-6xl px-6 py-16 md:px-10">
+      <div className="mx-auto max-w-6xl px-4 py-12 md:px-6 lg:px-10">
         <header className="mb-12">
           <div className="flex justify-between items-center mb-8">
             <h1 className="font-display text-3xl text-paper">Admin Dashboard</h1>
