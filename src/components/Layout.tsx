@@ -34,7 +34,7 @@ export function Layout() {
     <SiteChrome>
       <Seo />
       <header className="sticky top-0 z-20 border-b border-line bg-void/80 backdrop-blur-md">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-4 md:px-10">
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4 md:px-6 lg:px-10">
           <NavLink to="/" className="flex min-w-0 items-center gap-3">
             <span className="flex size-10 shrink-0 items-center justify-center bg-paper">
               <img src="/media/logo.png" alt="" className="h-7 w-7 object-contain" />
@@ -80,7 +80,7 @@ export function Layout() {
         </div>
       </header>
       <Outlet />
-      <footer className="border-t border-line px-6 py-8 md:px-10">
+      <footer className="border-t border-line px-4 py-8 md:px-6 lg:px-10">
         <div className="mx-auto flex max-w-6xl flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <p className="font-mono text-kicker uppercase text-mute">{site.name}</p>
           <div className="flex flex-wrap gap-4">

@@ -9,7 +9,7 @@ const randomScene = scenes[Math.floor(Math.random() * scenes.length)]
 export function HomePage() {
   return (
     <main>
-      <section className="mx-auto max-w-6xl px-6 py-16 md:px-10 md:py-24">
+      <section className="mx-auto max-w-6xl px-4 py-12 md:px-6 lg:px-10 md:py-24">
         <p className="font-mono text-kicker uppercase text-signal">Collective</p>
         <h1 className="mt-5 font-display text-display text-paper">
           <span className="block">Arts and music,</span>
@@ -33,7 +33,7 @@ export function HomePage() {
           {site.objectives.map((item) => (
             <p
               key={item}
-              className="bg-void px-6 py-5 font-mono text-kicker uppercase text-paper md:px-8"
+              className="bg-void px-4 py-5 font-mono text-kicker uppercase text-paper md:px-8"
             >
               {item}
             </p>
@@ -41,7 +41,7 @@ export function HomePage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-6 py-16 md:px-10">
+      <section className="mx-auto max-w-6xl px-4 py-12 md:px-6 lg:px-10">
         <p className="font-mono text-kicker uppercase text-mute">01 — Latest</p>
         <div className="mt-6 flex flex-col items-start gap-8 md:flex-row">
           <img
@@ -67,7 +67,7 @@ export function HomePage() {
       </section>
 
       <section className="pb-16">
-        <div className="mx-auto max-w-6xl px-6 md:px-10">
+        <div className="mx-auto max-w-6xl px-4 md:px-6 lg:px-10">
           <p className="mb-6 font-mono text-kicker uppercase text-mute">
             02 — Event Gallery
           </p>
@@ -90,7 +90,7 @@ export function HomePage() {
         </MediaGrid>
       </section>
 
-      <section id="contact" className="border-t border-line px-6 py-16 md:px-10">
+      <section id="contact" className="border-t border-line px-4 py-12 md:px-6 lg:px-10">
         <div className="mx-auto max-w-6xl">
           <p className="font-mono text-kicker uppercase text-mute">03 — Contact</p>
           <h2 className="mt-3 font-display text-3xl font-bold tracking-tight">
