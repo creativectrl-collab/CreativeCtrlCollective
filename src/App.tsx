@@ -7,6 +7,7 @@ import { TeamPage } from './pages/TeamPage'
 import { TokenKitchenSink } from './pages/TokenKitchenSink'
 import { UpdatesPage } from './pages/UpdatesPage'
 import { GalleryPage } from './pages/GalleryPage'
+import { PrivacyPage } from './pages/PrivacyPage'
 import { LoginPage } from './pages/admin/Login'
 import { ResetPasswordPage } from './pages/admin/ResetPassword'
 import { AdminProfilePage } from './pages/admin/Profile'
@@ -24,6 +25,7 @@ export default function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/events" element={<EventsPage />} />
           <Route path="/gallery" element={<GalleryPage />} />
+          <Route path="/privacy" element={<PrivacyPage />} />
           <Route path="/team" element={<TeamPage />} />
           <Route path="/updates" element={<UpdatesPage />} />
           <Route path="/posts/:slug" element={<PostPage />} />

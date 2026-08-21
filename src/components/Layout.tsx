@@ -85,6 +85,12 @@ export function Layout() {
         <div className="mx-auto flex max-w-6xl flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <p className="font-mono text-kicker uppercase text-mute">{site.name}</p>
           <div className="flex flex-wrap gap-4">
+            <NavLink
+              to="/privacy"
+              className="font-mono text-kicker uppercase text-mute hover:text-signal"
+            >
+              Privacy
+            </NavLink>
             <a
               href={site.instagram}
               className="font-mono text-kicker uppercase text-mute hover:text-signal"
