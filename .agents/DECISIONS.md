@@ -64,6 +64,12 @@ Append-only. Each entry: date, decision, why, rejected alternative.
 **Why:** Provides complete layout control over custom highlight styling (`#d4ff3f`), image uploads, embeds, and blockquotes without bundle conflicts.
 **Rejected:** Using Novel's built-in styles and standard markdown plaintext rendering.
 
+## 2026-08-21 — Admin TOTP is mandatory
+
+**Decision:** Admin dashboard and all founder writes require TOTP (JWT `aal = aal2`). Password strength / leaked-password settings are optional and not a substitute. Restrictive RLS on insert/update/delete of `posts`, `email_campaigns`, `gallery_photos`, `community_members`, portal tables, and `team_profiles` enforces this at the database. Enrollment is `/admin/mfa-setup`; login challenge is `/admin/mfa`.
+**Why:** A leaked password is enough to take over email+password admin. TOTP is something they have; without `aal2` RLS the Data API would still accept the stolen password.
+**Rejected:** Password-length rules as the primary control. Optional MFA. Phone/SMS MFA.
+
 ## 2026-08-21 — Auth Site URL is production
 
 **Decision:** Supabase Auth URL Configuration for project `xzfdmrjxwkcxdcbqvwbd` uses Site URL `https://www.creativectrlcollective.org`. Additional redirect URLs include the www host, the apex host, and `http://localhost:5173/**` for Vite. Signup/reset pass `emailRedirectTo` / `redirectTo` from `window.location.origin` so confirm emails do not fall back to localhost.

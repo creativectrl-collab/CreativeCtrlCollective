@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { supabase } from '../../lib/supabase'
+import { adminGatePath, resolveAdminGate } from '../../lib/adminAuth'
 
 export function AdminGuard({ children }: { children: React.ReactNode }) {
   const [authorized, setAuthorized] = useState<boolean | null>(null)
@@ -8,23 +8,12 @@ export function AdminGuard({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     async function checkAuth() {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user?.email) {
-        navigate('/admin')
+      const gate = await resolveAdminGate()
+      if (gate === 'dashboard') {
+        setAuthorized(true)
         return
       }
-
-      const { data: profile } = await supabase
-        .from('team_profiles')
-        .select('is_admin')
-        .ilike('email', user.email)
-        .single()
-
-      if (profile?.is_admin) {
-        setAuthorized(true)
-      } else {
-        navigate('/')
-      }
+      navigate(adminGatePath[gate])
     }
     checkAuth()
   }, [navigate])

@@ -61,6 +61,10 @@ export function AdminProfilePage() {
         <Button type="submit" disabled={loading}>Update Password</Button>
       </form>
 
+      <p className="text-mute text-sm mt-8">
+        Two-factor authentication is required each time you open the admin dashboard.
+      </p>
+
       {message && <p className="text-signal text-sm mt-4">{message}</p>}
       {error && <p className="text-alert text-sm mt-4">{error}</p>}
     </div>

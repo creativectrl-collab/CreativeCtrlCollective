@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
+import { adminGatePath, resolveAdminGate } from '../../lib/adminAuth'
 import { authRedirectTo, isExistingAuthAccount, supabase } from '../../lib/supabase'
 import { Button } from '../../components/Button'
 
@@ -18,23 +19,15 @@ export function LoginPage() {
 
   useEffect(() => {
     async function routeIfAdmin() {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user?.email) return
-
-      const { data: profile } = await supabase
-        .from('team_profiles')
-        .select('is_admin')
-        .ilike('email', user.email)
-        .single()
-
-      if (profile?.is_admin) {
-        navigate('/admin/dashboard')
+      const gate = await resolveAdminGate()
+      if (gate !== 'login' && gate !== 'home') {
+        navigate(adminGatePath[gate])
       }
     }
 
     void routeIfAdmin()
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
-      if (event === 'SIGNED_IN' || event === 'USER_UPDATED') {
+      if (event === 'SIGNED_IN' || event === 'USER_UPDATED' || event === 'MFA_CHALLENGE_VERIFIED') {
         void routeIfAdmin()
       }
     })
@@ -70,7 +63,7 @@ export function LoginPage() {
         password,
       })
       if (error) setError(error.message)
-      else navigate('/admin/dashboard')
+      else navigate(adminGatePath[await resolveAdminGate()])
     }
     setLoading(false)
   }

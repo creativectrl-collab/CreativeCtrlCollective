@@ -11,6 +11,8 @@ import { PrivacyPage } from './pages/PrivacyPage'
 import { LoginPage } from './pages/admin/Login'
 import { ResetPasswordPage } from './pages/admin/ResetPassword'
 import { AdminProfilePage } from './pages/admin/Profile'
+import { MfaSetupPage } from './pages/admin/MfaSetup'
+import { MfaChallengePage } from './pages/admin/MfaChallenge'
 import { DashboardLayout } from './pages/admin/dashboard/Layout'
 import { DashboardIndex } from './pages/admin/dashboard/Index'
 import { EventsManager } from './pages/admin/dashboard/Events'
@@ -31,6 +33,8 @@ export default function App() {
           <Route path="/posts/:slug" element={<PostPage />} />
           <Route path="/admin" element={<LoginPage />} />
           <Route path="/admin/reset-password" element={<ResetPasswordPage />} />
+          <Route path="/admin/mfa-setup" element={<MfaSetupPage />} />
+          <Route path="/admin/mfa" element={<MfaChallengePage />} />
           <Route path="/admin/profile" element={<AdminProfilePage />} />
         </Route>
         <Route path="/admin/dashboard" element={<DashboardLayout />}>
