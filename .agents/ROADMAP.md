@@ -11,7 +11,7 @@
 | 4 | done | Public shell + Hero / Manifesto (static from existing Creative CTRL pages) |
 | 5 | done | Events showcase (static posters; later `/initiatives` via Supabase) |
 | 6 | done | Team / Roster (three founding partners, static) |
-| 7 | todo | Submissions & Contact → `inquiries` table (mailto stub is live on Home) |
+| 7 | done | Submissions & Contact (Wired database + Resend notification email) |
 | 8 | todo | Partner portal (Google OAuth, ledgers, governance docs, schedules) |
 | 9 | todo | Content, domain, launch checklist (human DNS / Workspace steps) |
 

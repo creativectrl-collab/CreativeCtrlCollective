@@ -1,9 +1,9 @@
 # Handoff — Creative CTRL Collective
 
-**Updated:** 2026-08-21T19:45:00Z  
-**Agent:** grok  
-**Slice:** Schema completion & Gated Portal → complete; current target is **7**  
-**Proof:** `npx tsc -b` clean; 24 restrictive `Require TOTP for *` policies on Collective DB  
+**Updated:** 2026-08-21T19:07:00Z  
+**Agent:** Antigravity  
+**Slice:** Submissions & Contact → complete; current target is **8**  
+**Proof:** `npx tsc -b` clean; contact submissions write to `community_members` and trigger `notify-contact` Edge Function.
 **Repo:** https://github.com/creativectrl-collab/CreativeCtrlCollective (`dev`). Push as `creativectrl-collab`.
 
 ---
@@ -21,10 +21,11 @@
 - Admin signup/reset now send `emailRedirectTo` from the current origin (`/admin` and `/admin/profile`).
 - Duplicate admin signup detects an existing auth account, switches to login, and offers password reset.
 - Admin TOTP: `/admin/mfa-setup` enroll, `/admin/mfa` challenge, AdminGuard requires `aal2`, restrictive write RLS on founder tables.
+- **Slice 7 (Submissions & Contact):** Wired contact form submissions to save to `community_members` table and trigger a Resend email notification directly to `contact@creativectrlcollective.org` via a new Edge Function (`notify-contact`). Cleaned up `mailto:` fallback navigation.
 
 ## Next (exactly one primary task)
 
-**Slice 7 — Submissions & Contact.** Wire the contact form to persist to the database (currently drafts to `community_members`) and set up notification email dispatching.
+**Slice 8 — Partner Portal.** Set up partner authentication dashboard (Google OAuth), project ledgers, governance document downloads (MOU/BIN), and production schedules.
 
 ## Blocked
 
@@ -41,6 +42,8 @@
 - `src/pages/PostPage.tsx`
 - `src/App.tsx`
 - `supabase/functions/send-campaign/index.ts`
+- `supabase/functions/notify-contact/index.ts`
+- `src/components/ContactForm.tsx`
 - `.gitignore`
 - `.agents/HANDOFF.md`
 - `.agents/DECISIONS.md`

@@ -1,5 +1,4 @@
 import { useState, type FormEvent } from 'react'
-import { site } from '../content/site'
 import { Button } from './Button'
 import { supabase } from '../lib/supabase'
 
@@ -36,10 +35,19 @@ export function ContactForm() {
 
       if (dbError) throw dbError
 
-      // 2. Fallback mailto (per requirements until Slice 7)
-      const subject = encodeURIComponent(`Creative CTRL Collective — ${name} (${inquiryType})`)
-      const body = encodeURIComponent(`From: ${name} <${email}>\n\n${message}`)
-      window.location.href = `mailto:${site.email}?subject=${subject}&body=${body}`
+      // 2. Dispatch notification email via Edge Function
+      const { error: fnError } = await supabase.functions.invoke('notify-contact', {
+        body: {
+          name,
+          email,
+          inquiryType,
+          message
+        }
+      })
+
+      if (fnError) {
+        console.error('Email notification failed:', fnError)
+      }
       
       setSuccess(true)
       form.reset()
@@ -108,7 +116,7 @@ export function ContactForm() {
         {loading ? 'Sending...' : 'Send'}
       </Button>
       {success ? (
-        <p className="font-mono text-xs text-signal">Thank you — inquiry saved and mail client opened.</p>
+        <p className="font-mono text-xs text-signal">Thank you — your inquiry has been received.</p>
       ) : null}
       {error ? (
         <p className="font-mono text-xs text-error">{error}</p>
