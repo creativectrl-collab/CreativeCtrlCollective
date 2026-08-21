@@ -50,15 +50,15 @@ export function EventsManager() {
 
   return (
     <div className="grid gap-12">
-      <form onSubmit={handleCreate} className="grid gap-4 p-4 border border-line bg-surface md:p-6">
-        <h2 className="text-lg text-paper">Create Event</h2>
+      <form onSubmit={handleCreate} className="grid grid-cols-1 gap-4 p-4 border border-line bg-surface md:p-6">
+        <h2 className="text-lg text-paper col-span-full">Create Event</h2>
         <input placeholder="Title" value={title} onChange={e => setTitle(e.target.value)} className="bg-void p-2 border border-line text-paper" />
         <input type="datetime-local" value={date} onChange={e => setDate(e.target.value)} className="bg-void p-2 border border-line text-paper" />
         <input placeholder="Venue Name" value={venue} onChange={e => setVenue(e.target.value)} className="bg-void p-2 border border-line text-paper" />
         <label className="text-mute text-sm">Flyer Image</label>
         <input type="file" onChange={e => setFile(e.target.files?.[0] || null)} className="bg-void p-2 border border-line text-paper" />
         <textarea placeholder="Description" value={description} onChange={e => setDescription(e.target.value)} className="bg-void p-2 border border-line text-paper h-32" />
-        <Button type="submit">Publish Event</Button>
+        <Button type="submit" className="w-full">Publish Event</Button>
       </form>
 
       <div className="grid gap-4">

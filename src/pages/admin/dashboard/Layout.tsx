@@ -20,7 +20,7 @@ export function DashboardLayout() {
               ← Return to Site
             </Link>
           </div>
-          <nav className="flex gap-4 border-b border-line pb-4">
+          <nav className="flex flex-wrap gap-4 border-b border-line pb-4">
             {tabs.map(tab => (
               <Link 
                 key={tab.to} 
