@@ -14,9 +14,9 @@ export function DashboardLayout() {
     <AdminGuard>
       <div className="mx-auto max-w-6xl px-4 py-12 md:px-6 lg:px-10">
         <header className="mb-12">
-          <div className="flex justify-between items-center mb-8">
+          <div className="flex flex-col-reverse gap-4 mb-8 sm:flex-row sm:justify-between sm:items-center">
             <h1 className="font-display text-3xl text-paper">Admin Dashboard</h1>
-            <Link to="/" className="font-mono text-sm uppercase text-signal hover:text-paper">
+            <Link to="/" className="font-mono text-sm uppercase text-signal hover:text-paper sm:ml-auto">
               ← Return to Site
             </Link>
           </div>
