@@ -21,7 +21,7 @@ export function Layout() {
   useEffect(() => {
     async function checkAdmin() {
       const { data: { user } } = await supabase.auth.getUser()
-      if (user) {
+      if (user?.email) {
         const { data: profile } = await supabase
           .from('team_profiles')
           .select('is_admin')

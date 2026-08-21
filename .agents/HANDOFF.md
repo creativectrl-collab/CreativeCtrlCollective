@@ -1,9 +1,9 @@
 # Handoff — Creative CTRL Collective
 
-**Updated:** 2026-08-21T18:30:00Z  
+**Updated:** 2026-08-21T19:10:00Z  
 **Agent:** grok  
 **Slice:** Schema completion & Gated Portal → complete; current target is **7**  
-**Proof:** none (auth URL config is a dashboard step; signup now passes `emailRedirectTo`)  
+**Proof:** `npx tsc -b` clean; `/admin` and `/admin/reset-password` 200 on localhost:5173  
 **Repo:** https://github.com/creativectrl-collab/CreativeCtrlCollective (`dev`). Push as `creativectrl-collab`.
 
 ---
@@ -19,6 +19,7 @@
 - Fixed infinite recursion RLS policy error on `team_profiles`.
 - Implemented Visual Gallery & Event Archive: created `gallery_photos` database table, constructed `/gallery` filter/masonry roll with fullscreen swipe lightbox, created homepage "Artifact Frame", and integrated a multi-image admin editor batch uploader.
 - Admin signup/reset now send `emailRedirectTo` from the current origin (`/admin` and `/admin/profile`).
+- Duplicate admin signup detects an existing auth account, switches to login, and offers password reset.
 
 ## Next (exactly one primary task)
 

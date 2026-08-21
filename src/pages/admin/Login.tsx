@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
-import { authRedirectTo, supabase } from '../../lib/supabase'
+import { authRedirectTo, isExistingAuthAccount, supabase } from '../../lib/supabase'
 import { Button } from '../../components/Button'
 
 export function LoginPage() {
@@ -9,13 +9,17 @@ export function LoginPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [notice, setNotice] = useState<string | null>(null)
+  const [existingAccount, setExistingAccount] = useState(false)
   const [isSignUp, setIsSignUp] = useState(false)
   const navigate = useNavigate()
+  const resetPath = email
+    ? `/admin/reset-password?email=${encodeURIComponent(email)}`
+    : '/admin/reset-password'
 
   useEffect(() => {
     async function routeIfAdmin() {
       const { data: { user } } = await supabase.auth.getUser()
-      if (!user) return
+      if (!user?.email) return
 
       const { data: profile } = await supabase
         .from('team_profiles')
@@ -42,17 +46,24 @@ export function LoginPage() {
     setLoading(true)
     setError(null)
     setNotice(null)
+    setExistingAccount(false)
 
     if (isSignUp) {
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
           emailRedirectTo: authRedirectTo('/admin'),
         },
       })
-      if (error) setError(error.message)
-      else setNotice('Check your email for confirmation. Click the link to finish signing in.')
+      if (isExistingAuthAccount(error, data.user)) {
+        setIsSignUp(false)
+        setExistingAccount(true)
+      } else if (error) {
+        setError(error.message)
+      } else {
+        setNotice('Check your email for confirmation. Click the link to finish signing in.')
+      }
     } else {
       const { error } = await supabase.auth.signInWithPassword({
         email,
@@ -89,13 +100,32 @@ export function LoginPage() {
         <Button type="submit" disabled={loading}>
           {loading ? 'Processing...' : isSignUp ? 'Sign Up' : 'Login'}
         </Button>
+        {!isSignUp && (
+          <Link to={resetPath} className="text-mute text-sm hover:text-paper text-left">
+            Forgot password?
+          </Link>
+        )}
         <button
           type="button"
-          onClick={() => setIsSignUp(!isSignUp)}
+          onClick={() => {
+            setIsSignUp(!isSignUp)
+            setError(null)
+            setNotice(null)
+            setExistingAccount(false)
+          }}
           className="text-mute text-sm hover:text-paper"
         >
           {isSignUp ? 'Already have an account? Login' : 'Need an account? Sign Up'}
         </button>
+        {existingAccount && (
+          <p className="text-signal text-sm">
+            An account already exists for this email. Sign in, or{' '}
+            <Link to={resetPath} className="underline hover:text-paper">
+              reset your password
+            </Link>{' '}
+            if you forgot it.
+          </p>
+        )}
         {notice && <p className="text-signal text-sm">{notice}</p>}
         {error && <p className="text-alert text-sm">{error}</p>}
       </form>

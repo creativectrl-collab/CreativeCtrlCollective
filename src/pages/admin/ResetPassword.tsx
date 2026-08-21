@@ -1,9 +1,11 @@
 import { useState } from 'react'
+import { Link, useSearchParams } from 'react-router-dom'
 import { authRedirectTo, supabase } from '../../lib/supabase'
 import { Button } from '../../components/Button'
 
 export function ResetPasswordPage() {
-  const [email, setEmail] = useState('')
+  const [searchParams] = useSearchParams()
+  const [email, setEmail] = useState(() => searchParams.get('email') ?? '')
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -44,6 +46,11 @@ export function ResetPasswordPage() {
         {message && <p className="text-signal text-sm">{message}</p>}
         {error && <p className="text-alert text-sm">{error}</p>}
       </form>
+      <div className="mt-8 border-t border-line pt-4 text-center">
+        <Link to="/admin" className="font-mono text-xs uppercase text-signal hover:text-paper transition-colors">
+          ← Back to login
+        </Link>
+      </div>
     </div>
   )
 }

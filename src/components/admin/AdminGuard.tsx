@@ -9,7 +9,7 @@ export function AdminGuard({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     async function checkAuth() {
       const { data: { user } } = await supabase.auth.getUser()
-      if (!user) {
+      if (!user?.email) {
         navigate('/admin')
         return
       }
