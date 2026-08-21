@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom'
 import { Layout } from './components/Layout'
 import { EventsPage } from './pages/EventsPage'
 import { HomePage } from './pages/HomePage'
@@ -29,6 +29,7 @@ export default function App() {
           <Route path="/admin/profile" element={<AdminProfilePage />} />
         </Route>
         <Route path="/admin/dashboard" element={<DashboardLayout />}>
+          <Route index element={<Navigate to="events" replace />} />
           <Route path="events" element={<EventsManager />} />
           <Route path="blog" element={<BlogManager />} />
           <Route path="broadcasts" element={<BroadcastsManager />} />

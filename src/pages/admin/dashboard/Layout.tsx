@@ -14,7 +14,12 @@ export function DashboardLayout() {
     <AdminGuard>
       <div className="mx-auto max-w-6xl px-6 py-16 md:px-10">
         <header className="mb-12">
-          <h1 className="font-display text-3xl text-paper mb-8">Admin Dashboard</h1>
+          <div className="flex justify-between items-center mb-8">
+            <h1 className="font-display text-3xl text-paper">Admin Dashboard</h1>
+            <Link to="/" className="font-mono text-sm uppercase text-signal hover:text-paper">
+              ← Return to Site
+            </Link>
+          </div>
           <nav className="flex gap-4 border-b border-line pb-4">
             {tabs.map(tab => (
               <Link 
