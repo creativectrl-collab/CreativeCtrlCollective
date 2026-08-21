@@ -33,12 +33,16 @@ export function CampaignForm() {
       return
     }
 
-    // 2. Invoke Edge Function (Mocked)
-    // const { error: fnError } = await supabase.functions.invoke('send-campaign', {
-    //   body: { campaignId: campaign.id }
-    // })
+    // 2. Invoke Edge Function
+    const { error: fnError } = await supabase.functions.invoke('send-campaign', {
+      body: { campaignId: campaign.id }
+    })
     
-    setStatus('Campaign triggered: ' + campaign.id)
+    if (fnError) {
+      setStatus('Campaign created, but dispatch failed: ' + fnError.message)
+    } else {
+      setStatus('Campaign dispatched successfully!')
+    }
     setLoading(false)
     form.reset()
   }

@@ -1,7 +1,9 @@
 import { NavLink, Outlet } from 'react-router-dom'
+import { useEffect, useState } from 'react'
 import { site } from '../content/site'
 import { Seo } from './Seo'
 import { SiteChrome } from './SiteChrome'
+import { supabase } from '../lib/supabase'
 
 const nav = [
   { to: '/', label: 'Home', end: true },
@@ -11,6 +13,23 @@ const nav = [
 ] as const
 
 export function Layout() {
+  const [isAdmin, setIsAdmin] = useState(false)
+
+  useEffect(() => {
+    async function checkAdmin() {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        const { data: profile } = await supabase
+          .from('team_profiles')
+          .select('is_admin')
+          .eq('email', user.email)
+          .single()
+        setIsAdmin(!!profile?.is_admin)
+      }
+    }
+    checkAdmin()
+  }, [])
+
   return (
     <SiteChrome>
       <Seo />
@@ -48,6 +67,14 @@ export function Layout() {
                   {item.label}
                 </NavLink>
               ),
+            )}
+            {isAdmin && (
+              <NavLink
+                to="/admin/dashboard/events"
+                className="font-mono text-kicker uppercase text-alert hover:text-paper"
+              >
+                Admin
+              </NavLink>
             )}
           </nav>
         </div>

@@ -30,3 +30,7 @@ pnpm-debug.log*
 *.sln
 *.swp
 *.sw?
+
+# Supabase local temp
+supabase/.temp/
+supabase/.branches/

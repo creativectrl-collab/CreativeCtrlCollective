@@ -4,6 +4,8 @@ import { ContactForm } from '../components/ContactForm'
 import { MediaGrid, PhotoTile } from '../components/MediaGrid'
 import { events, scenes, site } from '../content/site'
 
+const randomScene = scenes[Math.floor(Math.random() * scenes.length)]
+
 export function HomePage() {
   return (
     <main>
@@ -71,6 +73,13 @@ export function HomePage() {
           </p>
         </div>
         <MediaGrid>
+          <Link to="/events" className="col-span-2 md:col-span-1">
+             <img 
+               src={randomScene} 
+               alt="Gallery Spotlight"
+               className="w-full h-full object-cover border border-line"
+             />
+          </Link>
           {scenes.map((src, index) => (
             <PhotoTile
               key={src}
