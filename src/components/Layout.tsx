@@ -8,6 +8,7 @@ import { supabase } from '../lib/supabase'
 const nav = [
   { to: '/', label: 'Home', end: true },
   { to: '/events', label: 'Events', end: false },
+  { to: '/gallery', label: 'Gallery', end: false },
   { to: '/team', label: 'Team', end: false },
   { to: '/#contact', label: 'Contact', end: false },
 ] as const
@@ -70,7 +71,7 @@ export function Layout() {
             )}
             {isAdmin && (
               <NavLink
-                to="/admin/dashboard/events"
+                to="/admin/dashboard"
                 className="font-mono text-kicker uppercase text-alert hover:text-paper"
               >
                 Admin

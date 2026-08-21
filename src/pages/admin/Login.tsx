@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { Button } from '../../components/Button'
 
@@ -87,6 +87,11 @@ export function LoginPage() {
         </button>
         {error && <p className="text-alert text-sm">{error}</p>}
       </form>
+      <div className="mt-8 border-t border-line pt-4 text-center">
+        <Link to="/" className="font-mono text-xs uppercase text-signal hover:text-paper transition-colors">
+          ← Return to Public Site
+        </Link>
+      </div>
     </div>
   )
 }

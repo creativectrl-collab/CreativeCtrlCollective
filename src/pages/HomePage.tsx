@@ -1,10 +1,87 @@
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { controlClass } from '../components/control'
 import { ContactForm } from '../components/ContactForm'
-import { MediaGrid, PhotoTile } from '../components/MediaGrid'
-import { events, scenes, site } from '../content/site'
+import { events, site } from '../content/site'
+import { supabase } from '../lib/supabase'
 
-const randomScene = scenes[Math.floor(Math.random() * scenes.length)]
+function ArtifactFrame() {
+  const [photo, setPhoto] = useState<{ url: string; title: string; date?: string; caption?: string } | null>(null)
+  const [fade, setFade] = useState(false)
+
+  useEffect(() => {
+    async function fetchRandomVisual() {
+      try {
+        const { data, error } = await supabase
+          .from('gallery_photos')
+          .select('image_url, caption, posts(title, event_date)')
+        
+        if (error) throw error
+
+        if (data && data.length > 0) {
+          const randomItem = data[Math.floor(Math.random() * data.length)]
+          const post = randomItem.posts as any
+          setPhoto({
+            url: randomItem.image_url,
+            title: post?.title || 'Creative CTRL Capture',
+            date: post?.event_date ? new Date(post.event_date).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' }) : undefined,
+            caption: randomItem.caption
+          })
+        } else {
+          // Fallback to static scenes
+          const fallbackScenes = [
+            'https://xzfdmrjxwkcxdcbqvwbd.supabase.co/storage/v1/object/public/public-media/scenes/01.jpg',
+            'https://xzfdmrjxwkcxdcbqvwbd.supabase.co/storage/v1/object/public/public-media/scenes/02.jpg',
+            'https://xzfdmrjxwkcxdcbqvwbd.supabase.co/storage/v1/object/public/public-media/scenes/03.jpg',
+            'https://xzfdmrjxwkcxdcbqvwbd.supabase.co/storage/v1/object/public/public-media/scenes/04.jpg',
+            'https://xzfdmrjxwkcxdcbqvwbd.supabase.co/storage/v1/object/public/public-media/scenes/05.jpg',
+            'https://xzfdmrjxwkcxdcbqvwbd.supabase.co/storage/v1/object/public/public-media/scenes/06.jpg',
+          ]
+          const randomFallback = fallbackScenes[Math.floor(Math.random() * fallbackScenes.length)]
+          setPhoto({
+            url: randomFallback,
+            title: 'Creative CTRL Scene',
+            caption: 'Archived capture from past session.'
+          })
+        }
+        
+        setTimeout(() => setFade(true), 50)
+      } catch (err) {
+        console.error('Failed to fetch visual archive:', err)
+      }
+    }
+
+    fetchRandomVisual()
+  }, [])
+
+  if (!photo) return <div className="h-96 w-full max-w-4xl mx-auto bg-surface border border-line animate-pulse rounded"></div>
+
+  return (
+    <div className={`overflow-hidden border border-line bg-surface rounded transition-opacity duration-700 max-w-4xl mx-auto ${fade ? 'opacity-100' : 'opacity-0'}`}>
+      <img 
+        src={photo.url} 
+        alt={photo.title}
+        loading="lazy"
+        className="w-full object-cover max-h-[500px]"
+      />
+      {/* Information badge cleanly below the visual */}
+      <div className="bg-surface p-4 md:p-6 border-t border-line flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <span className="font-mono text-[9px] text-signal uppercase tracking-widest font-bold">Featured Capture</span>
+          <h3 className="font-display text-base md:text-lg font-bold text-paper mt-1">{photo.title}</h3>
+          {photo.date && <p className="font-mono text-[9px] text-mute uppercase mt-0.5">{photo.date}</p>}
+          {photo.caption && <p className="text-xs text-mute mt-1.5 line-clamp-2">{photo.caption}</p>}
+        </div>
+        <Link 
+          to="/gallery" 
+          className="font-mono text-xs uppercase tracking-wider bg-signal text-void font-bold px-4 py-2 border border-signal hover:bg-void hover:text-signal transition-colors text-center shrink-0 rounded"
+        >
+          View Full Gallery →
+        </Link>
+      </div>
+    </div>
+  )
+}
 
 export function HomePage() {
   return (
@@ -42,7 +119,7 @@ export function HomePage() {
       </section>
 
       <section className="mx-auto max-w-6xl px-4 py-12 md:px-6 lg:px-10">
-        <p className="font-mono text-kicker uppercase text-mute">01 — Latest</p>
+        <p className="font-mono text-kicker uppercase text-mute">Latest</p>
         <div className="mt-6 flex flex-col items-start gap-8 md:flex-row">
           <img
             src={events.latest.image}
@@ -66,33 +143,18 @@ export function HomePage() {
         </div>
       </section>
 
-      <section className="pb-16">
-        <div className="mx-auto max-w-6xl px-4 md:px-6 lg:px-10">
-          <p className="mb-6 font-mono text-kicker uppercase text-mute">
-            02 — Event Gallery
+      <section className="pb-16 px-4 md:px-6 lg:px-10">
+        <div className="mx-auto max-w-6xl mb-6">
+          <p className="font-mono text-kicker uppercase text-mute">
+            Event Gallery
           </p>
         </div>
-        <MediaGrid>
-          <Link to="/events" className="col-span-2 md:col-span-1">
-             <img 
-               src={randomScene} 
-               alt="Gallery Spotlight"
-               className="w-full h-full object-cover border border-line"
-             />
-          </Link>
-          {scenes.map((src, index) => (
-            <PhotoTile
-              key={src}
-              src={src}
-              alt={`Creative CTRL event scene ${index + 1}`}
-            />
-          ))}
-        </MediaGrid>
+        <ArtifactFrame />
       </section>
 
       <section id="contact" className="border-t border-line px-4 py-12 md:px-6 lg:px-10">
         <div className="mx-auto max-w-6xl">
-          <p className="font-mono text-kicker uppercase text-mute">03 — Contact</p>
+          <p className="font-mono text-kicker uppercase text-mute">Contact</p>
           <h2 className="mt-3 font-display text-3xl font-bold tracking-tight">
             We are just an email away.
           </h2>

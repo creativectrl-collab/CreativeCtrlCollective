@@ -39,10 +39,12 @@ function PreviewContent({ contentStr }: { contentStr: string }) {
     return (
       <div className="font-sans text-sm text-mute leading-relaxed">
         {json.content.map((block: any, idx: number) => {
+          const textStyle = block.attrs?.textAlign ? { textAlign: block.attrs.textAlign } : undefined
+          
           switch (block.type) {
             case 'paragraph':
               return (
-                <p key={idx} className="mb-4">
+                <p key={idx} className="mb-4" style={textStyle}>
                   {block.content?.map((span: any, sIdx: number) => {
                     if (span.type === 'text') {
                       let el = <>{span.text}</>
@@ -64,13 +66,13 @@ function PreviewContent({ contentStr }: { contentStr: string }) {
               const Level = `h${block.attrs?.level || 2}` as 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
               const sizeClass = block.attrs?.level === 1 ? 'text-3xl' : block.attrs?.level === 2 ? 'text-2xl' : 'text-xl'
               return (
-                <Level key={idx} className={`font-display font-bold text-paper mt-6 mb-3 ${sizeClass}`}>
+                <Level key={idx} className={`font-display font-bold text-paper mt-6 mb-3 ${sizeClass}`} style={textStyle}>
                   {block.content?.map((span: any) => span.text).join('')}
                 </Level>
               )
             case 'bulletList':
               return (
-                <ul key={idx} className="list-disc pl-5 mb-4 space-y-1">
+                <ul key={idx} className="list-disc pl-5 mb-4 space-y-1" style={textStyle}>
                   {block.content?.map((item: any, liIdx: number) => (
                     <li key={liIdx}>
                       {item.content?.map((p: any) => p.content?.map((span: any) => span.text).join('')).join('')}
@@ -80,7 +82,7 @@ function PreviewContent({ contentStr }: { contentStr: string }) {
               )
             case 'orderedList':
               return (
-                <ol key={idx} className="list-decimal pl-5 mb-4 space-y-1">
+                <ol key={idx} className="list-decimal pl-5 mb-4 space-y-1" style={textStyle}>
                   {block.content?.map((item: any, liIdx: number) => (
                     <li key={liIdx}>
                       {item.content?.map((p: any) => p.content?.map((span: any) => span.text).join('')).join('')}
@@ -90,7 +92,7 @@ function PreviewContent({ contentStr }: { contentStr: string }) {
               )
             case 'blockquote':
               return (
-                <blockquote key={idx} className="border-l-4 border-signal pl-4 italic text-paper my-4 bg-surface p-4 rounded-r-md">
+                <blockquote key={idx} className="border-l-4 border-signal pl-4 italic text-paper my-4 bg-surface p-4 rounded-r-md" style={textStyle}>
                   {block.content?.map((p: any) => p.content?.map((span: any) => span.text).join('')).join('')}
                 </blockquote>
               )
@@ -100,8 +102,53 @@ function PreviewContent({ contentStr }: { contentStr: string }) {
                   key={idx}
                   src={block.attrs?.src}
                   alt={block.attrs?.alt || ''}
-                  className="my-6 max-h-96 w-full object-cover border border-line"
+                  className={block.attrs?.class || "my-6 max-h-96 w-full object-cover border border-line rounded block mx-auto"}
                 />
+              )
+            case 'audioPlayer':
+              return (
+                <div key={idx} className="border border-line bg-surface p-4 rounded my-6 max-w-md mx-auto">
+                  <p className="font-mono text-[10px] text-signal uppercase tracking-wider mb-2 font-bold">Audio Track: {block.attrs?.title}</p>
+                  <audio src={block.attrs?.src} controls className="w-full outline-none"></audio>
+                </div>
+              )
+            case 'buttonLink':
+              return (
+                <div key={idx} className="my-6 text-center">
+                  <a href={block.attrs?.href} target="_blank" rel="noopener noreferrer" className="inline-block bg-signal text-void font-mono text-xs uppercase font-bold tracking-wider px-6 py-3 border border-signal hover:bg-void hover:text-signal transition-colors rounded">
+                    {block.attrs?.text}
+                  </a>
+                </div>
+              )
+            case 'socialLinks':
+              const urls = [
+                { name: 'INSTAGRAM', url: block.attrs?.instagram },
+                { name: 'SOUNDCLOUD', url: block.attrs?.soundcloud },
+                { name: 'SPOTIFY', url: block.attrs?.spotify }
+              ].filter(u => u.url)
+              return (
+                <div key={idx} className="flex items-center justify-center gap-6 my-6 py-3 border-y border-line max-w-sm mx-auto">
+                  {urls.map((u, uIdx) => (
+                    <a key={uIdx} href={u.url} target="_blank" rel="noopener noreferrer" className="text-xs font-mono text-mute hover:text-signal transition-colors">
+                      {u.name}
+                    </a>
+                  ))}
+                </div>
+              )
+            case 'mediaIframe':
+              return (
+                <div key={idx} className="w-full aspect-video border border-line rounded bg-void overflow-hidden my-6">
+                  <iframe src={block.attrs?.src} className="w-full h-full border-none" allow="encrypted-media"></iframe>
+                </div>
+              )
+            case 'imageGallery':
+              const imagesList: string[] = block.attrs?.urls ? block.attrs.urls.split(',') : []
+              return (
+                <div key={idx} className={block.attrs?.class || "grid grid-cols-3 gap-4 my-6 w-full mx-auto block"}>
+                  {imagesList.map((url, imgIdx) => (
+                    <img key={imgIdx} src={url} className="w-full aspect-square object-cover border border-line rounded" alt={`Gallery image ${imgIdx + 1}`} />
+                  ))}
+                </div>
               )
             default:
               return null

@@ -63,3 +63,9 @@ Append-only. Each entry: date, decision, why, rejected alternative.
 **Decision:** Replace the default Novel wrapper with a custom `@tiptap/react` BlockEditor and render structured block JSON on the client-side `PostPage.tsx`.
 **Why:** Provides complete layout control over custom highlight styling (`#d4ff3f`), image uploads, embeds, and blockquotes without bundle conflicts.
 **Rejected:** Using Novel's built-in styles and standard markdown plaintext rendering.
+
+## 2026-08-21 — Visual Gallery & Timeline Archive
+
+**Decision:** Created the `gallery_photos` table, implemented the `/gallery` tag-less timeline navigation grouped by year, and integrated a multi-image editor batch uploader inside the events admin panel.
+**Why:** Grouping by year instead of event title keeps the tag navigation row compact and future-proof. Having the uploader inline inside the event editor allows complete catalog management of historical event rolls.
+**Rejected:** Displaying all event titles as tag selectors.
