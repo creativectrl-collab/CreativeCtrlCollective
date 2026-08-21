@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { controlClass } from '../components/control'
-import { ContactForm } from '../components/ContactForm'
 import { events, site } from '../content/site'
 import { supabase } from '../lib/supabase'
 
@@ -152,22 +151,19 @@ export function HomePage() {
         <ArtifactFrame />
       </section>
 
-      <section id="contact" className="border-t border-line px-4 py-12 md:px-6 lg:px-10">
-        <div className="mx-auto max-w-6xl">
-          <p className="font-mono text-kicker uppercase text-mute">Contact</p>
-          <h2 className="mt-3 font-display text-3xl font-bold tracking-tight">
-            We are just an email away.
-          </h2>
-          <p className="mt-3 max-w-xl text-mute">
-            Artists, collaborators, and sponsors — write us. Inbound lands at{' '}
-            <a href={`mailto:${site.email}`} className="text-signal">
-              {site.email}
-            </a>
-            .
+      <section className="border-t border-line px-4 py-16 md:px-6 lg:px-10 text-center">
+        <div className="mx-auto max-w-xl grid gap-4">
+          <p className="font-mono text-kicker uppercase text-signal">Get Updates</p>
+          <h2 className="font-display text-2xl md:text-3xl font-bold text-paper">Join the Collective</h2>
+          <p className="text-sm text-mute">
+            Subscribe to our broadcasts for curated event notifications, visual gallery roll drops, and community updates.
           </p>
-          <div className="mt-8">
-            <ContactForm />
-          </div>
+          <button 
+            onClick={() => window.dispatchEvent(new CustomEvent('open-contact'))}
+            className="mt-2 font-mono text-xs uppercase tracking-wider bg-signal text-void font-bold px-6 py-3 border border-signal hover:bg-void hover:text-signal transition-colors rounded mx-auto"
+          >
+            Subscribe to Communications
+          </button>
         </div>
       </section>
     </main>

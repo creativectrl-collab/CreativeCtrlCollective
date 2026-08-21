@@ -4,17 +4,19 @@ import { site } from '../content/site'
 import { Seo } from './Seo'
 import { SiteChrome } from './SiteChrome'
 import { supabase } from '../lib/supabase'
+import { ContactModal } from './ContactModal'
 
 const nav = [
   { to: '/', label: 'Home', end: true },
   { to: '/events', label: 'Events', end: false },
   { to: '/gallery', label: 'Gallery', end: false },
   { to: '/team', label: 'Team', end: false },
-  { to: '/#contact', label: 'Contact', end: false },
+  { to: '#contact', label: 'Contact', end: false },
 ] as const
 
 export function Layout() {
   const [isAdmin, setIsAdmin] = useState(false)
+  const [isContactOpen, setIsContactOpen] = useState(false)
 
   useEffect(() => {
     async function checkAdmin() {
@@ -29,6 +31,15 @@ export function Layout() {
       }
     }
     checkAdmin()
+  }, [])
+
+  // Listen to open-contact custom DOM events
+  useEffect(() => {
+    function handleOpen() {
+      setIsContactOpen(true)
+    }
+    window.addEventListener('open-contact', handleOpen)
+    return () => window.removeEventListener('open-contact', handleOpen)
   }, [])
 
   return (
@@ -46,10 +57,16 @@ export function Layout() {
           </NavLink>
           <nav className="flex flex-wrap items-center justify-end gap-x-4 gap-y-2">
             {nav.map((item) =>
-              item.to.includes('#') ? (
+              item.to.startsWith('#') ? (
                 <a
                   key={item.to}
                   href={item.to}
+                  onClick={(e) => {
+                    e.preventDefault()
+                    if (item.label === 'Contact') {
+                      setIsContactOpen(true)
+                    }
+                  }}
                   className="font-mono text-kicker uppercase text-mute hover:text-paper"
                 >
                   {item.label}
@@ -80,11 +97,19 @@ export function Layout() {
           </nav>
         </div>
       </header>
+      
       <Outlet />
+      
       <footer className="border-t border-line px-4 py-8 md:px-6 lg:px-10">
         <div className="mx-auto flex max-w-6xl flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <p className="font-mono text-kicker uppercase text-mute">{site.name}</p>
-          <div className="flex flex-wrap gap-4">
+          <div className="flex flex-wrap items-center gap-4">
+            <button
+              onClick={() => setIsContactOpen(true)}
+              className="font-mono text-kicker uppercase text-mute hover:text-signal outline-none"
+            >
+              Subscribe
+            </button>
             <NavLink
               to="/privacy"
               className="font-mono text-kicker uppercase text-mute hover:text-signal"
@@ -106,6 +131,9 @@ export function Layout() {
           </div>
         </div>
       </footer>
+
+      {/* Global Contact Form Modal */}
+      <ContactModal isOpen={isContactOpen} onClose={() => setIsContactOpen(false)} />
     </SiteChrome>
   )
 }
