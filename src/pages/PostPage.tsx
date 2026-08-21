@@ -5,6 +5,87 @@ import { fetchPublishedPostBySlug, isEventPost, type Post } from '../lib/posts'
 import { SEO_DEFAULTS, absoluteUrl } from '../seo/defaults'
 import { postJsonLd } from '../seo/postJsonLd'
 
+function renderContent(contentStr: string) {
+  try {
+    const json = JSON.parse(contentStr)
+    if (json && json.type === 'doc' && Array.isArray(json.content)) {
+      return json.content.map((block: any, idx: number) => {
+        switch (block.type) {
+          case 'paragraph':
+            return (
+              <p key={idx} className="mb-4">
+                {block.content?.map((span: any, sIdx: number) => {
+                  if (span.type === 'text') {
+                    let el = <>{span.text}</>
+                    if (span.marks) {
+                      span.marks.forEach((mark: any) => {
+                        if (mark.type === 'bold') el = <strong key={sIdx}>{el}</strong>
+                        if (mark.type === 'italic') el = <em key={sIdx}>{el}</em>
+                        if (mark.type === 'code') el = <code key={sIdx} className="bg-surface px-1 py-0.5 rounded text-signal font-mono text-xs">{el}</code>
+                        if (mark.type === 'link') el = <a key={sIdx} href={mark.attrs.href} target="_blank" rel="noopener noreferrer" className="text-signal underline">{el}</a>
+                      })
+                    }
+                    return <span key={sIdx}>{el}</span>
+                  }
+                  return null
+                })}
+              </p>
+            )
+          case 'heading':
+            const Level = `h${block.attrs?.level || 2}` as 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
+            const sizeClass = block.attrs?.level === 1 ? 'text-3xl' : block.attrs?.level === 2 ? 'text-2xl' : 'text-xl'
+            return (
+              <Level key={idx} className={`font-display font-bold text-paper mt-6 mb-3 ${sizeClass}`}>
+                {block.content?.map((span: any) => span.text).join('')}
+              </Level>
+            )
+          case 'bulletList':
+            return (
+              <ul key={idx} className="list-disc pl-5 mb-4 space-y-1">
+                {block.content?.map((item: any, liIdx: number) => (
+                  <li key={liIdx}>
+                    {item.content?.map((p: any) => p.content?.map((span: any) => span.text).join('')).join('')}
+                  </li>
+                ))}
+              </ul>
+            )
+          case 'orderedList':
+            return (
+              <ol key={idx} className="list-decimal pl-5 mb-4 space-y-1">
+                {block.content?.map((item: any, liIdx: number) => (
+                  <li key={liIdx}>
+                    {item.content?.map((p: any) => p.content?.map((span: any) => span.text).join('')).join('')}
+                  </li>
+                ))}
+              </ol>
+            )
+          case 'blockquote':
+            return (
+              <blockquote key={idx} className="border-l-4 border-signal pl-4 italic text-paper my-4">
+                {block.content?.map((p: any) => p.content?.map((span: any) => span.text).join('')).join('')}
+              </blockquote>
+            )
+          case 'image':
+            return (
+              <img
+                key={idx}
+                src={block.attrs?.src}
+                alt={block.attrs?.alt || ''}
+                className="my-6 max-h-96 w-full object-cover border border-line"
+              />
+            )
+          default:
+            return null
+        }
+      })
+    }
+  } catch {
+    // Fallback to plain text if not valid JSON
+  }
+
+  return <div className="whitespace-pre-wrap">{contentStr}</div>
+}
+
 export function PostPage() {
   const { slug = '' } = useParams()
   const [post, setPost] = useState<Post | null>(null)
@@ -88,7 +169,8 @@ export function PostPage() {
         <p className="mt-3 text-mute">
           {new Date(post.created_at).toLocaleDateString('en-CA', { dateStyle: 'long' })}
         </p>
-      )}
+      )
+      }
       {post.cover_image_url ? (
         <img
           src={post.cover_image_url}
@@ -98,8 +180,8 @@ export function PostPage() {
       ) : null}
       {post.excerpt ? <p className="mt-8 text-lede text-paper">{post.excerpt}</p> : null}
       {post.content_markdown ? (
-        <div className="mt-8 whitespace-pre-wrap text-pretty leading-relaxed text-mute">
-          {post.content_markdown}
+        <div className="mt-8 text-pretty leading-relaxed text-mute">
+          {renderContent(post.content_markdown)}
         </div>
       ) : null}
     </main>
