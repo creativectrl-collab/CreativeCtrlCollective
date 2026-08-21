@@ -17,7 +17,7 @@ export function AdminGuard({ children }: { children: React.ReactNode }) {
       const { data: profile } = await supabase
         .from('team_profiles')
         .select('is_admin')
-        .eq('email', user.email)
+        .ilike('email', user.email)
         .single()
 
       if (profile?.is_admin) {

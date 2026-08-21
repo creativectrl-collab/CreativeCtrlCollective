@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { supabase } from '../../lib/supabase'
+import { authRedirectTo, supabase } from '../../lib/supabase'
 import { Button } from '../../components/Button'
 
 export function ResetPasswordPage() {
@@ -15,7 +15,7 @@ export function ResetPasswordPage() {
     setMessage(null)
 
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/admin/update-password`,
+      redirectTo: authRedirectTo('/admin/profile'),
     })
 
     if (error) {

@@ -1,9 +1,9 @@
 # Handoff — Creative CTRL Collective
 
-**Updated:** 2026-08-21T05:07:00Z  
-**Agent:** antigravity  
+**Updated:** 2026-08-21T18:30:00Z  
+**Agent:** grok  
 **Slice:** Schema completion & Gated Portal → complete; current target is **7**  
-**Proof:** `npm run lint` 0 issues. `npm run build` succeeds cleanly. Visual gallery database structures populated and interactive masonry pages registered.  
+**Proof:** none (auth URL config is a dashboard step; signup now passes `emailRedirectTo`)  
 **Repo:** https://github.com/creativectrl-collab/CreativeCtrlCollective (`dev`). Push as `creativectrl-collab`.
 
 ---
@@ -18,6 +18,7 @@
 - Implemented CORS-compliant `send-campaign` Edge Function (Deno/TypeScript) integrating Resend API for CASL compliance.
 - Fixed infinite recursion RLS policy error on `team_profiles`.
 - Implemented Visual Gallery & Event Archive: created `gallery_photos` database table, constructed `/gallery` filter/masonry roll with fullscreen swipe lightbox, created homepage "Artifact Frame", and integrated a multi-image admin editor batch uploader.
+- Admin signup/reset now send `emailRedirectTo` from the current origin (`/admin` and `/admin/profile`).
 
 ## Next (exactly one primary task)
 
@@ -25,7 +26,7 @@
 
 ## Blocked
 
-- None.
+- Auth Site URL is still unset (defaults to localhost). Confirm emails will keep sending teammates to localhost until it is set in the dashboard. See DECISIONS 2026-08-21.
 
 ## Do not
 
@@ -42,5 +43,8 @@
 - `.agents/HANDOFF.md`
 - `.agents/DECISIONS.md`
 - `src/pages/admin/Login.tsx`
+- `src/pages/admin/ResetPassword.tsx`
+- `src/lib/supabase.ts`
+- `src/components/admin/AdminGuard.tsx`
 - `src/components/Layout.tsx`
 - `package.json`, `package-lock.json`

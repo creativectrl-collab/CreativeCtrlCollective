@@ -25,7 +25,7 @@ export function Layout() {
         const { data: profile } = await supabase
           .from('team_profiles')
           .select('is_admin')
-          .eq('email', user.email)
+          .ilike('email', user.email)
           .single()
         setIsAdmin(!!profile?.is_admin)
       }

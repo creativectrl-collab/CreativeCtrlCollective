@@ -64,6 +64,12 @@ Append-only. Each entry: date, decision, why, rejected alternative.
 **Why:** Provides complete layout control over custom highlight styling (`#d4ff3f`), image uploads, embeds, and blockquotes without bundle conflicts.
 **Rejected:** Using Novel's built-in styles and standard markdown plaintext rendering.
 
+## 2026-08-21 — Auth Site URL is production
+
+**Decision:** Supabase Auth URL Configuration for project `xzfdmrjxwkcxdcbqvwbd` uses Site URL `https://www.creativectrlcollective.org`. Additional redirect URLs include the www host, the apex host, and `http://localhost:5173/**` for Vite. Signup/reset pass `emailRedirectTo` / `redirectTo` from `window.location.origin` so confirm emails do not fall back to localhost.
+**Why:** Unset Site URL defaults to `http://localhost:3000`. Confirm links then bounce teammates (e.g. Kelly) to a machine with no local server, so the session never lands on the live site.
+**Rejected:** Leaving Site URL as localhost and relying on teammates to run Vite. Rejected a single hardcoded production URL in the client (breaks local confirm testing).
+
 ## 2026-08-21 — Visual Gallery & Timeline Archive
 
 **Decision:** Created the `gallery_photos` table, implemented the `/gallery` tag-less timeline navigation grouped by year, and integrated a multi-image editor batch uploader inside the events admin panel.

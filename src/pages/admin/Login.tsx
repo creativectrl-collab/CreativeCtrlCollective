@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
-import { supabase } from '../../lib/supabase'
+import { authRedirectTo, supabase } from '../../lib/supabase'
 import { Button } from '../../components/Button'
 
 export function LoginPage() {
@@ -8,40 +8,51 @@ export function LoginPage() {
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [notice, setNotice] = useState<string | null>(null)
   const [isSignUp, setIsSignUp] = useState(false)
   const navigate = useNavigate()
 
   useEffect(() => {
-    async function checkUser() {
+    async function routeIfAdmin() {
       const { data: { user } } = await supabase.auth.getUser()
-      if (user) {
-        // Double check if admin
-        const { data: profile } = await supabase
-          .from('team_profiles')
-          .select('is_admin')
-          .eq('email', user.email)
-          .single()
-        
-        if (profile?.is_admin) {
-          navigate('/admin/dashboard')
-        }
+      if (!user) return
+
+      const { data: profile } = await supabase
+        .from('team_profiles')
+        .select('is_admin')
+        .ilike('email', user.email)
+        .single()
+
+      if (profile?.is_admin) {
+        navigate('/admin/dashboard')
       }
     }
-    checkUser()
+
+    void routeIfAdmin()
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+      if (event === 'SIGNED_IN' || event === 'USER_UPDATED') {
+        void routeIfAdmin()
+      }
+    })
+    return () => subscription.unsubscribe()
   }, [navigate])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setLoading(true)
     setError(null)
+    setNotice(null)
 
     if (isSignUp) {
       const { error } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+          emailRedirectTo: authRedirectTo('/admin'),
+        },
       })
       if (error) setError(error.message)
-      else setError('Check your email for confirmation.')
+      else setNotice('Check your email for confirmation. Click the link to finish signing in.')
     } else {
       const { error } = await supabase.auth.signInWithPassword({
         email,
@@ -85,6 +96,7 @@ export function LoginPage() {
         >
           {isSignUp ? 'Already have an account? Login' : 'Need an account? Sign Up'}
         </button>
+        {notice && <p className="text-signal text-sm">{notice}</p>}
         {error && <p className="text-alert text-sm">{error}</p>}
       </form>
       <div className="mt-8 border-t border-line pt-4 text-center">
