@@ -51,3 +51,15 @@ Append-only. Each entry: date, decision, why, rejected alternative.
 **Decision:** Tokens live in `src/index.css` (`@theme`). Display/body is Bricolage Grotesque; kickers/data are IBM Plex Mono. Palette: `void` `#08080c`, `paper` `#f1eee6`, `signal` `#d4ff3f`, `alert` `#ff4d8d`, plus `surface` / `raised` / `line` / `mute`. Grain + ambient glow are CSS utilities consumed via `SiteChrome`.  
 **Why:** Plan.md asks for dark grotesque, mono accents, grain/glow, and media grids. Distinct from ArtSpace Clash Grotesk so the Collective is a sibling brand, not a clone.  
 **Rejected:** Reusing ArtSpace Clash Grotesk / `#1a1a1a` / blue accent. Rejected one-off colors in the Hero.
+
+## 2026-08-20 — Admin Dashboard Restructure & Standalone Builders
+
+**Decision:** The admin view `/admin/dashboard` is dedicated to statistics/metrics. Creating posts, events, and broadcasts is moved to standalone builder routes to feel modular and wordpress-like.
+**Why:** Improves usability, matches the requested layout, and separates content writing from dashboard monitoring.
+**Rejected:** Keeping creators and lists inline under navigation tabs.
+
+## 2026-08-20 — Custom Tiptap Editor & Block rendering
+
+**Decision:** Replace the default Novel wrapper with a custom `@tiptap/react` BlockEditor and render structured block JSON on the client-side `PostPage.tsx`.
+**Why:** Provides complete layout control over custom highlight styling (`#d4ff3f`), image uploads, embeds, and blockquotes without bundle conflicts.
+**Rejected:** Using Novel's built-in styles and standard markdown plaintext rendering.

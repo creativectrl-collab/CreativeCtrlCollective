@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom'
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { Layout } from './components/Layout'
 import { EventsPage } from './pages/EventsPage'
 import { HomePage } from './pages/HomePage'
@@ -10,6 +10,7 @@ import { LoginPage } from './pages/admin/Login'
 import { ResetPasswordPage } from './pages/admin/ResetPassword'
 import { AdminProfilePage } from './pages/admin/Profile'
 import { DashboardLayout } from './pages/admin/dashboard/Layout'
+import { DashboardIndex } from './pages/admin/dashboard/Index'
 import { EventsManager } from './pages/admin/dashboard/Events'
 import { BlogManager } from './pages/admin/dashboard/Blog'
 import { BroadcastsManager } from './pages/admin/dashboard/Broadcasts'
@@ -29,7 +30,7 @@ export default function App() {
           <Route path="/admin/profile" element={<AdminProfilePage />} />
         </Route>
         <Route path="/admin/dashboard" element={<DashboardLayout />}>
-          <Route index element={<Navigate to="events" replace />} />
+          <Route index element={<DashboardIndex />} />
           <Route path="events" element={<EventsManager />} />
           <Route path="blog" element={<BlogManager />} />
           <Route path="broadcasts" element={<BroadcastsManager />} />

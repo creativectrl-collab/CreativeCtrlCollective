@@ -1,31 +1,30 @@
 # Handoff — Creative CTRL Collective
 
-**Updated:** 2026-08-20T14:35Z  
-**Agent:** grok  
-**Slice:** SEO foundation → complete; current target is **3**  
-**Proof:** `npm run lint` 0 issues. `npm run build` wrote `dist/robots.txt`, `dist/sitemap.xml`, `dist/og-banner.png` (1200×630), `dist/logo.png`. Sitemap currently 4 static URLs (0 published `posts`).  
+**Updated:** 2026-08-21T03:45Z  
+**Agent:** antigravity  
+**Slice:** Schema completion & Gated Portal → complete; current target is **7**  
+**Proof:** `npm run lint` 0 issues. `npm run build` succeeds cleanly. Live site renders remote assets from `public-media` bucket and supports dynamic block JSON post renders.  
 **Repo:** https://github.com/creativectrl-collab/CreativeCtrlCollective (`dev`). Push as `creativectrl-collab`.
 
 ---
 
 ## Done — do not undo
 
-- Public pages (`/`, `/events`, `/team`) on Collective tokens. Title **Creative CTRL Collective**.
-- SEO: `Seo` wrapper + static tags in `index.html` (title template, description, canonical, OG, Twitter, Organization JSON-LD).
-- OG fallback: `/og-banner.png` 1200×630. Schema logo: `/logo.png`.
-- Post routes: `/updates`, `/posts/:slug`. Event JSON-LD if `posts.event_date` is set, else BlogPosting.
-- `public/robots.txt` allows indexing, disallows `/tokens`, points at sitemap.
-- `npm run sitemap` / `npm run build` fetch published `public.posts` slugs into `public/sitemap.xml`.
-- Contact is still mailto until Slice 7.
+- Standalone dedicated Supabase project `xzfdmrjxwkcxdcbqvwbd` active.
+- Storage RLS policies defined on `public-media` bucket to allow select and insert.
+- Local media files uploaded to Supabase Storage and build URLs converted to CDN.
+- Notion-style custom block editor (`BlockEditor.tsx`) using `@tiptap/react` with slash commands (`/`), bubble formatting, embeds, and drag-and-drop media uploads.
+- Restructured Admin Dashboard: Home view displays live database analytics and acts as launcher for standalone builder managers (Events, Blog, Broadcasts).
+- Implemented CORS-compliant `send-campaign` Edge Function (Deno/TypeScript) integrating Resend API for CASL compliance.
+- Fixed infinite recursion RLS policy error on `team_profiles`.
 
 ## Next (exactly one primary task)
 
-**Slice 3 — Schema completion** on `xzfdmrjxwkcxdcbqvwbd`. Finish truncated Plan.md RLS; portal tables + buckets. No remote `db reset`. Public pages stay static until wired. `posts` already exists (empty).
+**Slice 7 — Submissions & Contact.** Wire the contact form to persist to the database (currently drafts to `community_members`) and set up notification email dispatching.
 
 ## Blocked
 
-- Slice 3 needs Supabase CLI / dashboard write access.
-- Social crawlers (WhatsApp, iMessage, X) read `index.html` only. Homepage OG works; `/posts/:slug` OG needs prerender or an edge inject later.
+- None.
 
 ## Do not
 
@@ -33,14 +32,12 @@
 
 ## Files touched
 
-- `src/components/Seo.tsx`, `src/seo/defaults.ts`, `src/seo/postJsonLd.ts`, `src/lib/posts.ts`
-- `src/pages/{PostPage,UpdatesPage,EventsPage,TeamPage}.tsx`, `src/App.tsx`, `src/components/Layout.tsx`
-- `index.html`, `public/{robots.txt,sitemap.xml,og-banner.png,logo.png}`
-- `scripts/generate-sitemap.mjs`, `scripts/og-banner.html`, `package.json`, `netlify.toml`
-
-## Read-first (ordered)
-
-1. This file
-2. `src/seo/defaults.ts`
-3. `src/content/site.ts`
-4. `.agents/ROADMAP.md` (Slice 3)
+- `src/components/admin/BlockEditor.tsx`
+- `src/pages/admin/dashboard/{Index.tsx,Layout.tsx,Blog.tsx}`
+- `src/pages/PostPage.tsx`
+- `src/App.tsx`
+- `supabase/functions/send-campaign/index.ts`
+- `.gitignore`
+- `.agents/HANDOFF.md`
+- `.agents/DECISIONS.md`
+- `package.json`, `package-lock.json`
