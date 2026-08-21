@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { Button } from '../../components/Button'
@@ -10,6 +10,25 @@ export function LoginPage() {
   const [error, setError] = useState<string | null>(null)
   const [isSignUp, setIsSignUp] = useState(false)
   const navigate = useNavigate()
+
+  useEffect(() => {
+    async function checkUser() {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        // Double check if admin
+        const { data: profile } = await supabase
+          .from('team_profiles')
+          .select('is_admin')
+          .eq('email', user.email)
+          .single()
+        
+        if (profile?.is_admin) {
+          navigate('/admin/dashboard')
+        }
+      }
+    }
+    checkUser()
+  }, [navigate])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
