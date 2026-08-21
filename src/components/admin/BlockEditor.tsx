@@ -5,8 +5,10 @@ import StarterKit from '@tiptap/starter-kit'
 import Link from '@tiptap/extension-link'
 import Image from '@tiptap/extension-image'
 import Highlight from '@tiptap/extension-highlight'
+import Placeholder from '@tiptap/extension-placeholder'
 import TextAlign from '@tiptap/extension-text-align'
 import { Node } from '@tiptap/core'
+import { embedSrcFromUrl } from '../../lib/embedUrl'
 import { supabase } from '../../lib/supabase'
 
 // 1. Audio Custom Node
@@ -125,7 +127,7 @@ const GalleryNode = Node.create({
     return {
       urls: { default: '' },
       cols: { default: '3' },
-      class: { default: 'grid grid-cols-3 gap-4 my-6 w-full mx-auto block transition-all duration-300' }
+      class: { default: 'grid grid-cols-3 gap-4 my-6 w-full mx-auto' }
     }
   },
   parseHTML() {
@@ -133,7 +135,8 @@ const GalleryNode = Node.create({
   },
   renderHTML({ HTMLAttributes }) {
     const urls: string[] = HTMLAttributes.urls ? HTMLAttributes.urls.split(',') : []
-    const list: any[] = ['div', { class: HTMLAttributes.class }]
+    const colClass = HTMLAttributes.cols === '2' ? 'grid-cols-2' : HTMLAttributes.cols === '4' ? 'grid-cols-4' : 'grid-cols-3'
+    const list: any[] = ['div', { class: HTMLAttributes.class || `grid ${colClass} gap-4 my-6 w-full mx-auto` }]
     urls.forEach((url, i) => {
       list.push(['img', { src: url, class: 'w-full aspect-square object-cover border border-line rounded', alt: `Gallery image ${i + 1}` }])
     })
@@ -175,6 +178,9 @@ export function BlockEditor({ initialContent, onChange }: { initialContent: stri
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
+        heading: {
+          levels: [1, 2, 3],
+        },
         blockquote: {
           HTMLAttributes: {
             class: 'border-l-4 border-signal pl-4 italic text-paper my-6 bg-surface p-4 rounded-r-md',
@@ -185,6 +191,9 @@ export function BlockEditor({ initialContent, onChange }: { initialContent: stri
             class: 'bg-surface border border-line p-4 font-mono text-xs rounded my-4 text-signal overflow-x-auto',
           },
         },
+      }),
+      Placeholder.configure({
+        placeholder: 'Write the story. Type / for headings, lists, and widgets.',
       }),
       Link.configure({
         openOnClick: false,
@@ -215,7 +224,7 @@ export function BlockEditor({ initialContent, onChange }: { initialContent: stri
     },
     editorProps: {
       attributes: {
-        class: 'prose prose-invert max-w-none min-h-[450px] outline-none text-paper font-sans text-sm leading-relaxed p-6 bg-void border border-line focus:border-signal transition-colors',
+        class: 'min-h-[450px] outline-none text-paper font-sans text-sm leading-relaxed p-6 bg-void border border-line focus:border-signal transition-colors',
       },
       handleDOMEvents: {
         keydown: (view, event) => {
@@ -244,9 +253,12 @@ export function BlockEditor({ initialContent, onChange }: { initialContent: stri
     },
   })
 
-  // Watch content updates from parent if changed externally
   useEffect(() => {
-    if (!editor || !initialContent) return
+    if (!editor) return
+    if (!initialContent) {
+      editor.commands.clearContent()
+      return
+    }
     try {
       const currentJson = JSON.stringify(editor.getJSON())
       if (initialContent !== currentJson) {
@@ -362,19 +374,10 @@ export function BlockEditor({ initialContent, onChange }: { initialContent: stri
           ],
           onSubmit: (vals) => {
             if (vals.url) {
-              let src = vals.url
-              if (vals.url.includes('youtube.com') || vals.url.includes('youtu.be')) {
-                const id = vals.url.split('v=')[1]?.split('&')[0] || vals.url.split('/').pop()
-                src = `https://www.youtube.com/embed/${id}`
-              } else if (vals.url.includes('spotify.com')) {
-                src = vals.url.replace('spotify.com', 'spotify.com/embed')
-              } else if (vals.url.includes('soundcloud.com')) {
-                src = `https://w.soundcloud.com/player/?url=${encodeURIComponent(vals.url)}`
-              }
               executeCommand(() => {
                 editor.commands.insertContent({
                   type: 'mediaIframe',
-                  attrs: { src }
+                  attrs: { src: embedSrcFromUrl(vals.url) }
                 })
               })
             }
@@ -439,14 +442,13 @@ export function BlockEditor({ initialContent, onChange }: { initialContent: stri
           { key: 'cols', label: 'Columns (2, 3, or 4)', placeholder: '3' }
         ],
         onSubmit: (vals) => {
-          const colsCount = vals.cols || '3'
+          const colsCount = ['2', '3', '4'].includes(vals.cols) ? vals.cols : '3'
           executeCommand(() => {
             editor.commands.insertContent({
               type: 'imageGallery',
-              attrs: { 
+              attrs: {
                 urls: uploadedUrls.join(','),
                 cols: colsCount,
-                class: `grid grid-cols-${colsCount} gap-4 my-6 w-full mx-auto block transition-all duration-300`
               }
             })
           })
@@ -507,13 +509,14 @@ export function BlockEditor({ initialContent, onChange }: { initialContent: stri
       } else if (editor.isActive('imageGallery')) {
         const currentAttrs = editor.getAttributes('imageGallery')
         const cols = currentAttrs?.cols || '3'
+        const colClass = cols === '2' ? 'grid-cols-2' : cols === '4' ? 'grid-cols-4' : 'grid-cols-3'
         
         let floatClass = 'mx-auto block w-full'
         if (alignment === 'left') floatClass = 'float-left mr-6 mb-4 w-[48%]'
         else if (alignment === 'right') floatClass = 'float-right ml-6 mb-4 w-[48%]'
         else if (alignment === 'center') floatClass = 'mx-auto block w-[75%]'
         
-        const alignClass = `grid grid-cols-${cols} gap-4 my-6 rounded ${floatClass} transition-all duration-300`
+        const alignClass = `grid ${colClass} gap-4 my-6 rounded ${floatClass} transition-all duration-300`
         editor.chain().updateAttributes('imageGallery', { class: alignClass }).run()
       }
     })
@@ -549,8 +552,12 @@ export function BlockEditor({ initialContent, onChange }: { initialContent: stri
       if (editor.isActive('imageGallery')) {
         const currentAttrs = editor.getAttributes('imageGallery')
         const currentClass = currentAttrs?.class || ''
-        const updatedClass = currentClass.replace(/grid-cols-\d/, `grid-cols-${cols}`)
-        editor.chain().updateAttributes('imageGallery', { cols, class: updatedClass }).run()
+        const colClass = cols === '2' ? 'grid-cols-2' : cols === '4' ? 'grid-cols-4' : 'grid-cols-3'
+        const stripped = currentClass.replace(/grid-cols-\d+/g, '').trim()
+        editor.chain().updateAttributes('imageGallery', {
+          cols,
+          class: `grid ${colClass} gap-4 my-6 ${stripped}`.replace(/\s+/g, ' ').trim(),
+        }).run()
       }
     })
   }
@@ -618,11 +625,24 @@ export function BlockEditor({ initialContent, onChange }: { initialContent: stri
           <div className="flex flex-wrap items-center gap-y-2 gap-x-3">
             <div className="flex items-center gap-1">
               <span className="text-mute uppercase mr-1">Blocks:</span>
-              <button type="button" onMouseDown={(e) => e.preventDefault()} onClick={() => executeCommand(() => editor.chain().toggleHeading({ level: 2 }).run())} className="px-2 py-1 border border-line text-paper hover:bg-void rounded">H2</button>
-              <button type="button" onMouseDown={(e) => e.preventDefault()} onClick={() => executeCommand(() => editor.chain().toggleHeading({ level: 3 }).run())} className="px-2 py-1 border border-line text-paper hover:bg-void rounded">H3</button>
-              <button type="button" onMouseDown={(e) => e.preventDefault()} onClick={() => executeCommand(() => editor.chain().toggleBulletList().run())} className="px-2 py-1 border border-line text-paper hover:bg-void rounded">List</button>
-              <button type="button" onMouseDown={(e) => e.preventDefault()} onClick={() => executeCommand(() => editor.chain().toggleBlockquote().run())} className="px-2 py-1 border border-line text-paper hover:bg-void rounded">Quote</button>
-              <button type="button" onMouseDown={(e) => e.preventDefault()} onClick={() => executeCommand(() => editor.chain().setHorizontalRule().run())} className="px-2 py-1 border border-line text-paper hover:bg-void rounded">Divider</button>
+              {([
+                ['H1', () => editor.chain().focus().toggleHeading({ level: 1 }).run(), editor.isActive('heading', { level: 1 })],
+                ['H2', () => editor.chain().focus().toggleHeading({ level: 2 }).run(), editor.isActive('heading', { level: 2 })],
+                ['H3', () => editor.chain().focus().toggleHeading({ level: 3 }).run(), editor.isActive('heading', { level: 3 })],
+                ['List', () => editor.chain().focus().toggleBulletList().run(), editor.isActive('bulletList')],
+                ['Quote', () => editor.chain().focus().toggleBlockquote().run(), editor.isActive('blockquote')],
+              ] as const).map(([label, onClick, active]) => (
+                <button
+                  key={label}
+                  type="button"
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={onClick}
+                  className={`px-2 py-1 border rounded ${active ? 'border-signal bg-signal text-void' : 'border-line text-paper hover:bg-void'}`}
+                >
+                  {label}
+                </button>
+              ))}
+              <button type="button" onMouseDown={(e) => e.preventDefault()} onClick={() => editor.chain().focus().setHorizontalRule().run()} className="px-2 py-1 border border-line text-paper hover:bg-void rounded">Divider</button>
             </div>
 
             <span className="h-5 w-[1px] bg-line hidden sm:inline-block"></span>
@@ -679,19 +699,10 @@ export function BlockEditor({ initialContent, onChange }: { initialContent: stri
                   ],
                   onSubmit: (vals) => {
                     if (vals.url) {
-                      let src = vals.url
-                      if (vals.url.includes('youtube.com') || vals.url.includes('youtu.be')) {
-                        const id = vals.url.split('v=')[1]?.split('&')[0] || vals.url.split('/').pop()
-                        src = `https://www.youtube.com/embed/${id}`
-                      } else if (vals.url.includes('spotify.com')) {
-                        src = vals.url.replace('spotify.com', 'spotify.com/embed')
-                      } else if (vals.url.includes('soundcloud.com')) {
-                        src = `https://w.soundcloud.com/player/?url=${encodeURIComponent(vals.url)}`
-                      }
                       executeCommand(() => {
                         editor.commands.insertContent({
                           type: 'mediaIframe',
-                          attrs: { src }
+                          attrs: { src: embedSrcFromUrl(vals.url) },
                         })
                       })
                     }
@@ -769,6 +780,26 @@ export function BlockEditor({ initialContent, onChange }: { initialContent: stri
                 className={`px-2 py-1 text-xs font-mono rounded ${editor.isActive('code') ? 'bg-signal text-void' : 'text-paper hover:bg-void'}`}
               >
                 Code
+              </button>
+              <button
+                type="button"
+                onMouseDown={(e) => e.preventDefault()}
+                onClick={() => {
+                  if (editor.isActive('link')) {
+                    editor.chain().focus().unsetLink().run()
+                    return
+                  }
+                  openModal({
+                    title: 'Add link',
+                    inputs: [{ key: 'href', label: 'URL', placeholder: 'https://' }],
+                    onSubmit: (vals) => {
+                      if (vals.href) editor.chain().focus().setLink({ href: vals.href }).run()
+                    },
+                  })
+                }}
+                className={`px-2 py-1 text-xs font-mono rounded ${editor.isActive('link') ? 'bg-signal text-void' : 'text-paper hover:bg-void'}`}
+              >
+                Link
               </button>
               <button 
                 type="button"
