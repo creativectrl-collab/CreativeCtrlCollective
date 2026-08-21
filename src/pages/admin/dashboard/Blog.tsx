@@ -38,6 +38,7 @@ export function BlogManager() {
   // Custom states for rich features
   const [isSplitView, setIsSplitView] = useState(false)
   const [isDistractionFree, setIsDistractionFree] = useState(false)
+  const [notifySubscribers, setNotifySubscribers] = useState(false)
 
   useEffect(() => { loadPosts() }, [])
 
@@ -60,16 +61,31 @@ export function BlogManager() {
       cover_image_url = supabase.storage.from('public-media').getPublicUrl(data.path).data.publicUrl
     }
 
-    const { error } = await supabase.from('posts').insert({
+    const { data: newPost, error } = await supabase.from('posts').insert({
       title, slug: title.toLowerCase().replace(/ /g, '-'), category, excerpt, content_markdown: content, cover_image_url, is_published: isPublished
-    })
+    }).select().single()
 
     if (!error) { 
+      if (isPublished && notifySubscribers && newPost) {
+        const { error: fnError } = await supabase.functions.invoke('notify-post', {
+          body: {
+            postId: newPost.id,
+            origin: window.location.origin
+          }
+        })
+        if (fnError) {
+          console.error('Failed to notify subscribers:', fnError)
+          alert('Post published, but sending subscriber notifications failed.')
+        } else {
+          alert('Post published and subscribers notified!')
+        }
+      }
       loadPosts()
       setTitle('')
       setExcerpt('')
       setContent('')
       setFile(null)
+      setNotifySubscribers(false)
       setIsDistractionFree(false)
       setIsSplitView(false)
     }
@@ -168,9 +184,20 @@ export function BlogManager() {
         )}
       </div>
 
-      <div className="flex gap-4 border-t border-line pt-4 mt-2">
-        <Button onClick={() => handleCreate(false)}>Save Draft</Button>
-        <Button onClick={() => handleCreate(true)}>Publish Live</Button>
+      <div className="flex flex-wrap items-center gap-6 border-t border-line pt-4 mt-2">
+        <div className="flex gap-4">
+          <Button onClick={() => handleCreate(false)}>Save Draft</Button>
+          <Button onClick={() => handleCreate(true)}>Publish Live</Button>
+        </div>
+        <label className="flex items-center gap-2 cursor-pointer font-mono text-xs text-mute select-none">
+          <input
+            type="checkbox"
+            checked={notifySubscribers}
+            onChange={e => setNotifySubscribers(e.target.checked)}
+            className="accent-signal"
+          />
+          <span>Notify subscribers via email</span>
+        </label>
       </div>
     </div>
   )
