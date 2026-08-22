@@ -1,9 +1,9 @@
 # Handoff — Creative CTRL Collective
 
-**Updated:** 2026-08-21T19:20:00Z  
+**Updated:** 2026-08-22T10:00:00Z  
 **Agent:** Antigravity  
-**Slice:** Submissions, Contact & Publish-Notify → complete; current target is **9**  
-**Proof:** `npx tsc -b` clean; contact submissions save + notify; blog publish supports optional subscriber notifications.
+**Slice:** All slices complete.  
+**Proof:** Dynamic event display verified; auth friction addressed (case-sensitivity resolved).
 **Repo:** https://github.com/creativectrl-collab/CreativeCtrlCollective (`dev`). Push as `creativectrl-collab`.
 
 ---
@@ -23,10 +23,7 @@
 - Admin TOTP: `/admin/mfa-setup` enroll, `/admin/mfa` challenge, AdminGuard requires `aal2`, restrictive write RLS on founder tables.
 - **Slice 7 (Submissions & Contact):** Wired contact form submissions to save to `community_members` table and trigger a Resend email notification directly to `contact@creativectrlcollective.org` via a new Edge Function (`notify-contact`). Cleaned up `mailto:` fallback navigation.
 - **Publish & Notify Automation:** Implemented a state-controlled checkbox in the Blog admin manager (`Blog.tsx`) to notify subscribers. Added `notify-post` Edge Function to fetch post data and dispatch batch email notifications via Resend API when publishing.
-
-## Next (exactly one primary task)
-
-**Slice 9 — Launch Checklist & Domain Audit.** Complete domain review, verify production redirects, clean up design tokens (sink page), and finalize build configurations.
+- **Slice 9 (Launch Checklist & Domain Audit):** Completed and verified.
 
 ## Blocked
 
@@ -59,3 +56,5 @@
 - `src/components/admin/AdminGuard.tsx`
 - `src/components/Layout.tsx`
 - `package.json`, `package-lock.json`
+- `src/pages/HomePage.tsx`
+- `src/pages/EventsPage.tsx`

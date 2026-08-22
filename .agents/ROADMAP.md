@@ -13,7 +13,7 @@
 | 6 | done | Team / Roster (three founding partners, static) |
 | 7 | done | Submissions & Contact (Wired database + Resend notification email) |
 | 8 | out-of-scope | Partner portal (Google OAuth, ledgers, governance docs, schedules) |
-| 9 | todo | Content, domain, launch checklist (human DNS / Workspace steps) |
+| 9 | done | Content, domain, launch checklist (human DNS / Workspace steps) |
 
 ## v1 out of scope
 
