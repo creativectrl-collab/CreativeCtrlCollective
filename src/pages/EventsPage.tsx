@@ -1,7 +1,35 @@
+import { useState, useEffect } from 'react'
 import { Seo } from '../components/Seo'
-import { events } from '../content/site'
+import { supabase } from '../lib/supabase'
 
 export function EventsPage() {
+  const [events, setEvents] = useState<any[]>([])
+
+  useEffect(() => {
+    async function fetchEvents() {
+      const { data } = await supabase
+        .from('posts')
+        .select('*')
+        .eq('category', 'Event')
+        .eq('is_published', true)
+        .order('event_date', { ascending: false })
+      
+      if (data) {
+        setEvents(data.map(e => ({
+          ...e,
+          date: new Date(e.event_date).toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }),
+          note: e.content_markdown,
+          image: e.cover_image_url,
+          venue: e.venue_location
+        })))
+      }
+    }
+    fetchEvents()
+  }, [])
+
+  const latest = events[0]
+  const past = events.slice(1)
+
   return (
     <main className="mx-auto max-w-6xl px-6 py-16 md:px-10 md:py-20">
       <Seo
@@ -16,37 +44,47 @@ export function EventsPage() {
         wherever the work needs to land.
       </p>
 
-      <section className="mt-14">
-        <p className="font-mono text-kicker uppercase text-mute">Latest</p>
-        <article className="mt-6 grid gap-8 md:grid-cols-2">
-          <img
-            src={events.latest.image}
-            alt={events.latest.title}
-            className="w-full border border-line"
-          />
-          <EventCopy {...events.latest} />
-        </article>
-      </section>
+      {latest && (
+        <section className="mt-14">
+          <p className="font-mono text-kicker uppercase text-mute">Latest</p>
+          <article className="mt-6 grid gap-8 md:grid-cols-2">
+            <img
+              src={latest.image}
+              alt={latest.title}
+              className="w-full border border-line"
+            />
+            <EventCopy 
+              kicker="Latest event"
+              title={latest.title}
+              date={latest.date}
+              venue={latest.venue}
+              note={latest.note}
+            />
+          </article>
+        </section>
+      )}
 
-      <section className="mt-20">
-        <p className="font-mono text-kicker uppercase text-mute">Past events</p>
-        <div className="mt-6 grid gap-px bg-line md:grid-cols-3">
-          {events.past.map((event) => (
-            <article key={event.slug} className="bg-void p-0">
-              <img src={event.image} alt={event.title} className="aspect-square w-full object-cover" />
-              <div className="border-t border-line p-5">
-                <p className="font-mono text-kicker uppercase text-signal">{event.kicker}</p>
-                <h2 className="mt-2 font-display text-2xl font-bold tracking-tight">
-                  {event.title}
-                </h2>
-                <p className="mt-2 text-sm text-mute">{event.date}</p>
-                <p className="text-sm text-mute">{event.venue}</p>
-                <p className="mt-3 text-sm text-paper">{event.note}</p>
-              </div>
-            </article>
-          ))}
-        </div>
-      </section>
+      {past.length > 0 && (
+        <section className="mt-20">
+          <p className="font-mono text-kicker uppercase text-mute">Past events</p>
+          <div className="mt-6 grid gap-px bg-line md:grid-cols-3">
+            {past.map((event) => (
+              <article key={event.slug} className="bg-void p-0">
+                <img src={event.image} alt={event.title} className="aspect-square w-full object-cover" />
+                <div className="border-t border-line p-5">
+                  <p className="font-mono text-kicker uppercase text-signal">Past event</p>
+                  <h2 className="mt-2 font-display text-2xl font-bold tracking-tight">
+                    {event.title}
+                  </h2>
+                  <p className="mt-2 text-sm text-mute">{event.date}</p>
+                  <p className="text-sm text-mute">{event.venue}</p>
+                  <p className="mt-3 text-sm text-paper">{event.note}</p>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+      )}
     </main>
   )
 }

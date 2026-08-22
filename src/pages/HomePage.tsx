@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { controlClass } from '../components/control'
-import { events, site } from '../content/site'
+import { site } from '../content/site'
 import { supabase } from '../lib/supabase'
 
 function ArtifactFrame() {
@@ -83,6 +83,33 @@ function ArtifactFrame() {
 }
 
 export function HomePage() {
+  const [latestEvent, setLatestEvent] = useState<any>(null)
+
+  useEffect(() => {
+    async function fetchLatestEvent() {
+    const { data, error } = await supabase
+      .from('posts')
+      .select('*')
+      .eq('category', 'Event')
+      .eq('is_published', true)
+      .order('event_date', { ascending: false })
+      .limit(1)
+      .single()
+
+    if (!error && data) {
+        setLatestEvent({
+          title: data.title,
+          date: new Date(data.event_date).toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }),
+          venue: data.venue_location,
+          note: data.content_markdown,
+          image: data.cover_image_url,
+          kicker: 'Latest event'
+        })
+      }
+    }
+    fetchLatestEvent()
+  }, [])
+
   return (
     <main>
       <section className="mx-auto max-w-6xl px-4 py-12 md:px-6 lg:px-10 md:py-24">
@@ -117,30 +144,32 @@ export function HomePage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-4 py-12 md:px-6 lg:px-10">
-        <p className="font-mono text-kicker uppercase text-mute">Latest</p>
-        <div className="mt-6 flex flex-col items-start gap-8 md:flex-row">
-          <img
-            src={events.latest.image}
-            alt={events.latest.title}
-            className="w-full border border-line bg-surface md:w-1/2"
-          />
-          <div>
-            <p className="font-mono text-kicker uppercase text-signal">
-              {events.latest.kicker}
-            </p>
-            <h2 className="mt-3 font-display text-4xl font-bold tracking-tight">
-              {events.latest.title}
-            </h2>
-            <p className="mt-3 text-mute">{events.latest.date}</p>
-            <p className="mt-1 text-mute">{events.latest.venue}</p>
-            <p className="mt-4 max-w-md text-pretty text-paper">{events.latest.note}</p>
-            <Link to="/events" className={`${controlClass('ghost')} mt-6`}>
-              All events
-            </Link>
+      {latestEvent && (
+        <section className="mx-auto max-w-6xl px-4 py-12 md:px-6 lg:px-10">
+          <p className="font-mono text-kicker uppercase text-mute">Latest</p>
+          <div className="mt-6 flex flex-col items-start gap-8 md:flex-row">
+            <img
+              src={latestEvent.image}
+              alt={latestEvent.title}
+              className="w-full border border-line bg-surface md:w-1/2"
+            />
+            <div>
+              <p className="font-mono text-kicker uppercase text-signal">
+                {latestEvent.kicker}
+              </p>
+              <h2 className="mt-3 font-display text-4xl font-bold tracking-tight">
+                {latestEvent.title}
+              </h2>
+              <p className="mt-3 text-mute">{latestEvent.date}</p>
+              <p className="mt-1 text-mute">{latestEvent.venue}</p>
+              <p className="mt-4 max-w-md text-pretty text-paper">{latestEvent.note}</p>
+              <Link to="/events" className={`${controlClass('ghost')} mt-6`}>
+                All events
+              </Link>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       <section className="pb-16 px-4 md:px-6 lg:px-10">
         <div className="mx-auto max-w-6xl mb-6">

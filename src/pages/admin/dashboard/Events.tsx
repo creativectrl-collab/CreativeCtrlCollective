@@ -21,6 +21,7 @@ export function EventsManager() {
   const [venue, setVenue] = useState('')
   const [ticketLink, setTicketLink] = useState('')
   const [description, setDescription] = useState('')
+  const [isPublished, setIsPublished] = useState(false)
   const [flyerFile, setFlyerFile] = useState<File | null>(null)
   const [existingFlyerUrl, setExistingFlyerUrl] = useState('')
 
@@ -45,6 +46,7 @@ export function EventsManager() {
     setVenue(event.venue_location || '')
     setTicketLink(event.ticket_link || '')
     setDescription(event.content_markdown || '')
+    setIsPublished(event.is_published || false)
     setExistingFlyerUrl(event.cover_image_url || '')
     setFlyerFile(null)
     setDeletedDbPhotoIds([])
@@ -77,6 +79,7 @@ export function EventsManager() {
     setVenue('')
     setTicketLink('')
     setDescription('')
+    setIsPublished(false)
     setExistingFlyerUrl('')
     setFlyerFile(null)
     setStagedPhotos([])
@@ -158,7 +161,8 @@ export function EventsManager() {
           event_date: date,
           venue_location: venue,
           ticket_link: ticketLink,
-          cover_image_url
+          cover_image_url,
+          is_published: isPublished
         }).eq('id', editingId)
         if (error) throw error
       } else {
@@ -170,7 +174,8 @@ export function EventsManager() {
           event_date: date,
           venue_location: venue,
           ticket_link: ticketLink,
-          cover_image_url
+          cover_image_url,
+          is_published: isPublished
         }).select().single()
         if (error) throw error
         postId = newPost.id
@@ -282,6 +287,16 @@ export function EventsManager() {
         <div className="grid gap-1">
           <label className="font-mono text-[10px] uppercase text-mute">Ticket / RSVP URL (Optional)</label>
           <input placeholder="e.g. https://ra.co/events/..." value={ticketLink} onChange={e => setTicketLink(e.target.value)} className="bg-void p-2 border border-line text-paper text-sm outline-none focus:border-signal" />
+        </div>
+
+        <div className="flex items-center gap-2">
+          <input 
+            type="checkbox" 
+            checked={isPublished} 
+            onChange={e => setIsPublished(e.target.checked)}
+            className="w-4 h-4 bg-void border border-line outline-none focus:border-signal"
+          />
+          <label className="font-mono text-[10px] uppercase text-mute">Publish Event (Visible on site)</label>
         </div>
 
         <div className="grid gap-1">
