@@ -34,3 +34,7 @@ pnpm-debug.log*
 # Supabase local temp
 supabase/.temp/
 supabase/.branches/
+
+# Local documents / exports
+*.pdf
+

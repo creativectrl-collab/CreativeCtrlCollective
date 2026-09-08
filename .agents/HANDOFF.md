@@ -1,9 +1,9 @@
 # Handoff — Creative CTRL Collective
 
-**Updated:** 2026-08-22T10:00:00Z  
+**Updated:** 2026-09-08T18:35:00Z  
 **Agent:** Antigravity  
-**Slice:** All slices complete.  
-**Proof:** Dynamic event display verified; auth friction addressed (case-sensitivity resolved).
+**Slice:** Slice 3 (In-Progress) — Event Gallery Performance & Carousel UX  
+**Proof:** `npm run build && npm run lint` passed (zero errors). 10 existing gallery PNGs recompressed from ~360MB to ~55MB total and companion thumbnails uploaded.
 **Repo:** https://github.com/creativectrl-collab/CreativeCtrlCollective (`dev`). Push as `creativectrl-collab`.
 
 ---
@@ -12,18 +12,17 @@
 
 - Standalone dedicated Supabase project `xzfdmrjxwkcxdcbqvwbd` active.
 - Storage RLS policies defined on `public-media` bucket to allow select and insert.
-- Local media files uploaded to Supabase Storage and build URLs converted to CDN.
-- Notion-style custom block editor (`BlockEditor.tsx`) using `@tiptap/react` with slash commands (`/`), bubble formatting, embeds, text alignment, image floating layouts, and custom interactive node widgets (Audio Players, Custom Buttons, Social Link Icons, Multi-Image Galleries).
-- Restructured Admin Dashboard: Home view displays live database analytics and acts as launcher for standalone builder managers (Events, Blog, Broadcasts).
-- Implemented CORS-compliant `send-campaign` Edge Function (Deno/TypeScript) integrating Resend API for CASL compliance.
-- Fixed infinite recursion RLS policy error on `team_profiles`.
-- Implemented Visual Gallery & Event Archive: created `gallery_photos` database table, constructed `/gallery` filter/masonry roll with fullscreen swipe lightbox, created homepage "Artifact Frame", and integrated a multi-image admin editor batch uploader.
-- Admin signup/reset now send `emailRedirectTo` from the current origin (`/admin` and `/admin/profile`).
-- Duplicate admin signup detects an existing auth account, switches to login, and offers password reset.
+- One-time optimization executed: recompressed 10 legacy event gallery PNGs down from ~360MB (26MB–41MB each) to ~4.5MB–6MB full images (2560px max) and generated 720px thumbnails (~400KB–500KB) hosted with `-thumb.png` suffixes.
+- Client-side image optimization pipeline in `src/lib/imageOptimization.ts`: canvas compression to WebP, auto-generating full (`-full.webp`, max 2560px, 0.85 quality) and thumbnail (`-thumb.webp`, max 720px, 0.75 quality) variants, plus `getThumbnailUrl` derivation.
+- Updated `src/pages/admin/dashboard/Events.tsx` to automatically optimize event flyers (max 2400px WebP) and upload both full and thumbnail variants on all subsequent gallery additions.
+- Updated `src/pages/EventsPage.tsx`: eliminated grey grid container background (`bg-line`), transformed all past events (and latest event) into independent interactive horizontal swipe carousels with uniform dimensions, ambient blur showcase framing (preserving 100% of flyer text and artwork without crop), index counters, and direct click-through navigation to `/gallery#<slug>`.
 - Admin TOTP: `/admin/mfa-setup` enroll, `/admin/mfa` challenge, AdminGuard requires `aal2`, restrictive write RLS on founder tables.
-- **Slice 7 (Submissions & Contact):** Wired contact form submissions to save to `community_members` table and trigger a Resend email notification directly to `contact@creativectrlcollective.org` via a new Edge Function (`notify-contact`). Cleaned up `mailto:` fallback navigation.
-- **Publish & Notify Automation:** Implemented a state-controlled checkbox in the Blog admin manager (`Blog.tsx`) to notify subscribers. Added `notify-post` Edge Function to fetch post data and dispatch batch email notifications via Resend API when publishing.
-- **Slice 9 (Launch Checklist & Domain Audit):** Completed and verified.
+- Submissions & contact form wired with Resend email notification Edge Function (`notify-contact`).
+- Blog Publish & Notify subscriber automation with `notify-post` Edge Function.
+
+## Next
+
+- Verify responsive mobile gallery layout on staging and monitor thumbnail load speeds.
 
 ## Blocked
 
@@ -35,26 +34,15 @@
 
 ## Files touched
 
-- `src/components/admin/BlockEditor.tsx`
-- `src/pages/admin/dashboard/{Index.tsx,Layout.tsx,Blog.tsx,Broadcasts.tsx}`
-- `src/pages/PostPage.tsx`
-- `src/App.tsx`
-- `supabase/functions/send-campaign/index.ts`
-- `supabase/functions/notify-contact/index.ts`
-- `supabase/functions/notify-post/index.ts`
-- `src/components/ContactForm.tsx`
-- `.gitignore`
-- `.agents/HANDOFF.md`
-- `.agents/ROADMAP.md`
-- `.agents/DECISIONS.md`
-- `src/pages/admin/Login.tsx`
-- `src/pages/admin/ResetPassword.tsx`
-- `src/lib/supabase.ts`
-- `src/lib/adminAuth.ts`
-- `src/pages/admin/MfaSetup.tsx`
-- `src/pages/admin/MfaChallenge.tsx`
-- `src/components/admin/AdminGuard.tsx`
-- `src/components/Layout.tsx`
-- `package.json`, `package-lock.json`
-- `src/pages/HomePage.tsx`
+- `src/lib/imageOptimization.ts`
+- `src/pages/GalleryPage.tsx`
 - `src/pages/EventsPage.tsx`
+- `src/pages/admin/dashboard/Events.tsx`
+- `.agents/HANDOFF.md`
+
+## Read-first
+
+1. `.agents/HANDOFF.md`
+2. `.agents/ROADMAP.md`
+3. `src/lib/imageOptimization.ts`
+4. `src/pages/GalleryPage.tsx`

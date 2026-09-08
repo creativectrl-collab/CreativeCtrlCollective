@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../../../lib/supabase'
 import { Button } from '../../../components/Button'
+import { createGalleryPhotoVariants, compressImage } from '../../../lib/imageOptimization'
 
 interface StagedPhoto {
   id: string
@@ -136,17 +137,22 @@ export function EventsManager() {
       // 1. Upload Flyer Image if newly selected
       let cover_image_url = existingFlyerUrl
       if (flyerFile) {
-        if (flyerFile.size > 10 * 1024 * 1024) {
-          alert('Flyer too large. Please upload an image smaller than 10MB.')
-          setIsSubmitting(false)
-          setUploadStatus('')
-          return
-        }
-        const fileExt = flyerFile.name.split('.').pop()
-        const fileName = `${Math.random()}.${fileExt}`
-        const { data, error } = await supabase.storage.from('public-media').upload(fileName, flyerFile)
-        if (error) throw error
-        cover_image_url = supabase.storage.from('public-media').getPublicUrl(data.path).data.publicUrl
+        setUploadStatus('Optimizing and uploading event flyer...')
+        const compressedFlyer = await compressImage(flyerFile, {
+          maxWidth: 2400,
+          maxHeight: 2400,
+          quality: 0.85,
+          format: 'image/webp'
+        })
+        const flyerFilename = `flyers/${Date.now()}-${Math.random().toString(36).substring(2, 9)}.webp`
+        const { data: flyerData, error: flyerErr } = await supabase.storage
+          .from('public-media')
+          .upload(flyerFilename, compressedFlyer, {
+            contentType: 'image/webp',
+            upsert: true
+          })
+        if (flyerErr) throw flyerErr
+        cover_image_url = supabase.storage.from('public-media').getPublicUrl(flyerData.path).data.publicUrl
       }
 
       const slug = title.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '')
@@ -188,18 +194,33 @@ export function EventsManager() {
         if (error) throw error
       }
 
-      // 4. Upload and Save Staged Photos
+      // 4. Upload and Save Staged Photos with automatic optimization & thumbnails
       for (let i = 0; i < stagedPhotos.length; i++) {
         const photo = stagedPhotos[i]
         
         if (photo.file) {
-          setUploadStatus(`Uploading gallery photo ${i + 1}/${stagedPhotos.length}...`)
-          const fileExt = photo.file.name.split('.').pop()
-          const fileName = `${Math.random()}.${fileExt}`
-          const { data, error } = await supabase.storage.from('public-media').upload(fileName, photo.file)
-          if (error) throw error
+          setUploadStatus(`Optimizing & uploading gallery photo ${i + 1}/${stagedPhotos.length}...`)
+          const { fullBlob, thumbBlob, fullFilename, thumbFilename } = await createGalleryPhotoVariants(photo.file)
+
+          // Upload high-res full image (~1MB-2.5MB, 2560px WebP)
+          const { data: fullData, error: fullErr } = await supabase.storage
+            .from('public-media')
+            .upload(fullFilename, fullBlob, {
+              contentType: 'image/webp',
+              upsert: true
+            })
+          if (fullErr) throw fullErr
+
+          // Upload fast thumbnail (~50KB-90KB, 720px WebP)
+          const { error: thumbErr } = await supabase.storage
+            .from('public-media')
+            .upload(thumbFilename, thumbBlob, {
+              contentType: 'image/webp',
+              upsert: true
+            })
+          if (thumbErr) throw thumbErr
           
-          const imageUrl = supabase.storage.from('public-media').getPublicUrl(data.path).data.publicUrl
+          const imageUrl = supabase.storage.from('public-media').getPublicUrl(fullData.path).data.publicUrl
           
           const { error: insErr } = await supabase.from('gallery_photos').insert({
             post_id: postId,
