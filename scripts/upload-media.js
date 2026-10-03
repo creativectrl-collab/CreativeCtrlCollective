@@ -158,24 +158,24 @@ async function main() {
 
         console.log(`Generating WebP variants for ${folder.local}/${file}...`);
 
-        // 1. Full variant (max edge 2560, quality 85)
-        const fullBuffer = convertToWebp(cwebpPath, localPath, 2560, 85);
-        const remoteFullPath = `${folder.remote}/${stem}-full.webp`;
-        console.log(`Uploading ${remoteFullPath}...`);
-        const fullPublicUrl = await uploadBuffer(fullBuffer, remoteFullPath, 'image/webp');
+        // 1. Master variant (max edge 2048, quality 85)
+        const masterBuffer = convertToWebp(cwebpPath, localPath, 2048, 85);
+        const remoteMasterPath = `${folder.remote}/${stem}.webp`;
+        console.log(`Uploading ${remoteMasterPath}...`);
+        const masterPublicUrl = await uploadBuffer(masterBuffer, remoteMasterPath, 'image/webp');
 
-        // 2. Thumb variant (max edge 720, quality 75)
-        const thumbBuffer = convertToWebp(cwebpPath, localPath, 720, 75);
+        // 2. Thumb variant (max edge 480, quality 75)
+        const thumbBuffer = convertToWebp(cwebpPath, localPath, 480, 75);
         const remoteThumbPath = `${folder.remote}/${stem}-thumb.webp`;
         console.log(`Uploading ${remoteThumbPath}...`);
         const thumbPublicUrl = await uploadBuffer(thumbBuffer, remoteThumbPath, 'image/webp');
 
-        if (fullPublicUrl && thumbPublicUrl) {
+        if (masterPublicUrl && thumbPublicUrl) {
           console.log(`Successfully uploaded:`);
-          console.log(`  Full:  ${fullPublicUrl}`);
-          console.log(`  Thumb: ${thumbPublicUrl}`);
+          console.log(`  Master: ${masterPublicUrl}`);
+          console.log(`  Thumb:  ${thumbPublicUrl}`);
           const key = `/${folder.local.replace('public/', '')}/${file}`;
-          mappings[key] = fullPublicUrl;
+          mappings[key] = masterPublicUrl;
         }
       } else if (ext === '.svg') {
         // SVG is not a raster photo: upload it unchanged without generating WebP thumbnails

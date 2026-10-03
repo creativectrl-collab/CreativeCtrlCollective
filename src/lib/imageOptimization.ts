@@ -12,7 +12,8 @@ export interface OptimizeOptions {
 
 /**
  * Derives a thumbnail URL for gallery and preview grids.
- * Works with both newly uploaded -full.webp files and existing -thumb companion files.
+ * Derives base-thumb.webp from master base.webp, preserves legacy -full.webp to -thumb.webp rewrite,
+ * and leaves existing -thumb companion files intact without double-suffixing.
  */
 export function getThumbnailUrl(imageUrl: string | null | undefined): string {
   if (!imageUrl) return ''
@@ -22,12 +23,12 @@ export function getThumbnailUrl(imageUrl: string | null | undefined): string {
     return imageUrl
   }
 
-  // Modern naming convention: ...-full.webp -> ...-thumb.webp
+  // Legacy naming convention: ...-full.webp -> ...-thumb.webp
   if (imageUrl.includes('-full.')) {
     return imageUrl.replace('-full.', '-thumb.')
   }
 
-  // Existing companion files: .../photo.png -> .../photo-thumb.png
+  // Master companion files: .../base.webp -> .../base-thumb.webp (also supports legacy photo.png -> photo-thumb.png)
   const lastDot = imageUrl.lastIndexOf('.')
   const lastSlash = imageUrl.lastIndexOf('/')
   if (lastDot > lastSlash) {
@@ -48,8 +49,8 @@ export async function compressImage(
   options: OptimizeOptions = {}
 ): Promise<Blob> {
   const {
-    maxWidth = 2560,
-    maxHeight = 2560,
+    maxWidth = 2048,
+    maxHeight = 2048,
     quality = 0.85,
     format = 'image/webp'
   } = options
@@ -121,8 +122,8 @@ export interface PhotoVariantsOptions {
 }
 
 /**
- * Creates both Full (zoom-ready) and Thumbnail (~50KB-90KB) variants
- * for an image upload. Supports custom target folder and full-image max edge.
+ * Creates both Master (zoom-ready, max edge 2048) and Thumbnail (preview, max edge 480) variants
+ * for an image upload. Supports custom target folder and master-image max edge.
  */
 export async function createGalleryPhotoVariants(
   file: File,
@@ -130,7 +131,7 @@ export async function createGalleryPhotoVariants(
   legacyFullMaxEdge?: number
 ) {
   let folder = 'gallery'
-  let fullMaxEdge = 2560
+  let fullMaxEdge = 2048
 
   if (typeof optionsOrFolder === 'string') {
     folder = optionsOrFolder
@@ -151,7 +152,7 @@ export async function createGalleryPhotoVariants(
 
   const baseId = `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`
 
-  // 1. Full zoomable version (default max 2560px or custom fullMaxEdge, WebP quality 0.85)
+  // 1. Master zoomable version (default max 2048px or custom fullMaxEdge, WebP quality 0.85)
   const fullBlob = await compressImage(file, {
     maxWidth: fullMaxEdge,
     maxHeight: fullMaxEdge,
@@ -159,10 +160,10 @@ export async function createGalleryPhotoVariants(
     format: 'image/webp'
   })
 
-  // 2. Thumbnail preview version (max 720px, WebP quality 0.75)
+  // 2. Thumbnail preview version (max 480px, WebP quality 0.75)
   const thumbBlob = await compressImage(file, {
-    maxWidth: 720,
-    maxHeight: 720,
+    maxWidth: 480,
+    maxHeight: 480,
     quality: 0.75,
     format: 'image/webp'
   })
@@ -170,7 +171,7 @@ export async function createGalleryPhotoVariants(
   return {
     fullBlob,
     thumbBlob,
-    fullFilename: `${folder}/${baseId}-full.webp`,
+    fullFilename: `${folder}/${baseId}.webp`,
     thumbFilename: `${folder}/${baseId}-thumb.webp`
   }
 }

@@ -139,8 +139,7 @@ export function EventsManager() {
       if (flyerFile) {
         setUploadStatus('Optimizing and uploading event flyer...')
         const { fullBlob, thumbBlob, fullFilename, thumbFilename } = await createGalleryPhotoVariants(flyerFile, {
-          folder: 'flyers',
-          fullMaxEdge: 2400
+          folder: 'flyers'
         })
 
         const { data: flyerData, error: flyerErr } = await supabase.storage
@@ -209,7 +208,7 @@ export function EventsManager() {
           setUploadStatus(`Optimizing & uploading gallery photo ${i + 1}/${stagedPhotos.length}...`)
           const { fullBlob, thumbBlob, fullFilename, thumbFilename } = await createGalleryPhotoVariants(photo.file)
 
-          // Upload high-res full image (~1MB-2.5MB, 2560px WebP)
+          // Upload master image (master max 2048)
           const { data: fullData, error: fullErr } = await supabase.storage
             .from('public-media')
             .upload(fullFilename, fullBlob, {
@@ -218,7 +217,7 @@ export function EventsManager() {
             })
           if (fullErr) throw fullErr
 
-          // Upload fast thumbnail (~50KB-90KB, 720px WebP)
+          // Upload fast thumbnail (thumb max 480)
           const { error: thumbErr } = await supabase.storage
             .from('public-media')
             .upload(thumbFilename, thumbBlob, {
