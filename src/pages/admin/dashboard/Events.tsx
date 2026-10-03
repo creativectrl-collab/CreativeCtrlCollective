@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../../../lib/supabase'
 import { Button } from '../../../components/Button'
-import { createGalleryPhotoVariants, compressImage } from '../../../lib/imageOptimization'
+import { createGalleryPhotoVariants } from '../../../lib/imageOptimization'
 
 interface StagedPhoto {
   id: string
@@ -138,20 +138,27 @@ export function EventsManager() {
       let cover_image_url = existingFlyerUrl
       if (flyerFile) {
         setUploadStatus('Optimizing and uploading event flyer...')
-        const compressedFlyer = await compressImage(flyerFile, {
-          maxWidth: 2400,
-          maxHeight: 2400,
-          quality: 0.85,
-          format: 'image/webp'
+        const { fullBlob, thumbBlob, fullFilename, thumbFilename } = await createGalleryPhotoVariants(flyerFile, {
+          folder: 'flyers',
+          fullMaxEdge: 2400
         })
-        const flyerFilename = `flyers/${Date.now()}-${Math.random().toString(36).substring(2, 9)}.webp`
+
         const { data: flyerData, error: flyerErr } = await supabase.storage
           .from('public-media')
-          .upload(flyerFilename, compressedFlyer, {
+          .upload(fullFilename, fullBlob, {
             contentType: 'image/webp',
             upsert: true
           })
         if (flyerErr) throw flyerErr
+
+        const { error: thumbErr } = await supabase.storage
+          .from('public-media')
+          .upload(thumbFilename, thumbBlob, {
+            contentType: 'image/webp',
+            upsert: true
+          })
+        if (thumbErr) throw thumbErr
+
         cover_image_url = supabase.storage.from('public-media').getPublicUrl(flyerData.path).data.publicUrl
       }
 

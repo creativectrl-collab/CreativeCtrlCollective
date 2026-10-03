@@ -1,5 +1,7 @@
 import fs from 'fs';
 import path from 'path';
+import os from 'os';
+import { spawnSync } from 'child_process';
 import { createClient } from '@supabase/supabase-js';
 
 // Helper to parse .env.local
@@ -44,34 +46,82 @@ const mediaFolders = [
   { local: 'public/media/team', remote: 'team' },
 ];
 
-function getContentType(ext) {
-  switch (ext.toLowerCase()) {
-    case '.png': return 'image/png';
-    case '.jpg':
-    case '.jpeg': return 'image/jpeg';
-    case '.svg': return 'image/svg+xml';
-    default: return 'application/octet-stream';
+function findCwebp() {
+  const defaultPath = '/usr/local/bin/cwebp';
+  if (fs.existsSync(defaultPath)) {
+    return defaultPath;
   }
+  try {
+    const check = spawnSync('which', ['cwebp'], { encoding: 'utf-8' });
+    if (check.status === 0 && check.stdout.trim()) {
+      return check.stdout.trim();
+    }
+  } catch {
+    // ignore
+  }
+  return null;
 }
 
-async function uploadFile(localPath, remotePath) {
-  const fileBuffer = fs.readFileSync(localPath);
-  const ext = path.extname(localPath);
-  const contentType = getContentType(ext);
+function getImageDimensions(cwebpPath, filePath) {
+  const result = spawnSync(cwebpPath, [filePath, '-o', '/dev/null'], {
+    encoding: 'utf-8',
+  });
+  const output = (result.stderr || '') + (result.stdout || '');
+  const match = output.match(/Dimension:\s+(\d+)\s+x\s+(\d+)/);
+  if (match) {
+    return {
+      width: parseInt(match[1], 10),
+      height: parseInt(match[2], 10),
+    };
+  }
+  throw new Error(`Could not determine dimensions for ${filePath}: ${output}`);
+}
 
+function convertToWebp(cwebpPath, inputPath, maxEdge, quality) {
+  const { width, height } = getImageDimensions(cwebpPath, inputPath);
+  const tmpOut = path.join(
+    os.tmpdir(),
+    `cwebp-${Date.now()}-${Math.random().toString(36).substring(2, 9)}.webp`
+  );
+
+  const args = ['-q', String(quality)];
+
+  if (width > maxEdge || height > maxEdge) {
+    if (width >= height) {
+      args.push('-resize', String(maxEdge), '0');
+    } else {
+      args.push('-resize', '0', String(maxEdge));
+    }
+  }
+
+  args.push(inputPath, '-o', tmpOut);
+
+  const res = spawnSync(cwebpPath, args, { encoding: 'utf-8' });
+  if (res.status !== 0) {
+    if (fs.existsSync(tmpOut)) {
+      try { fs.unlinkSync(tmpOut); } catch {}
+    }
+    throw new Error(`cwebp failed for ${inputPath}: ${res.stderr || res.stdout}`);
+  }
+
+  const buffer = fs.readFileSync(tmpOut);
+  try { fs.unlinkSync(tmpOut); } catch {}
+  return buffer;
+}
+
+async function uploadBuffer(buffer, remotePath, contentType) {
   const { error } = await supabase.storage
     .from(BUCKET_NAME)
-    .upload(remotePath, fileBuffer, {
+    .upload(remotePath, buffer, {
       contentType,
       upsert: true,
     });
 
   if (error) {
-    console.error(`Failed to upload ${localPath} to ${remotePath}:`, error.message);
+    console.error(`Failed to upload to ${remotePath}:`, error.message);
     return null;
   }
 
-  // Generate public URL
   const { data: urlData } = supabase.storage
     .from(BUCKET_NAME)
     .getPublicUrl(remotePath);
@@ -81,7 +131,10 @@ async function uploadFile(localPath, remotePath) {
 
 async function main() {
   console.log(`Starting media upload to bucket "${BUCKET_NAME}"...`);
+  const cwebpPath = findCwebp();
   const mappings = {};
+
+  const rasterExts = new Set(['.png', '.jpg', '.jpeg', '.webp']);
 
   for (const folder of mediaFolders) {
     const localDir = path.resolve(process.cwd(), folder.local);
@@ -95,14 +148,48 @@ async function main() {
       const localPath = path.join(localDir, file);
       if (fs.statSync(localPath).isDirectory()) continue;
 
-      const remotePath = `${folder.remote}/${file}`;
-      console.log(`Uploading ${folder.local}/${file} -> ${remotePath}...`);
-      const publicUrl = await uploadFile(localPath, remotePath);
-      if (publicUrl) {
-        console.log(`Successfully uploaded: ${publicUrl}`);
-        // Create lookup key like "/media/events/latest.png"
-        const key = `/${folder.local.replace('public/', '')}/${file}`;
-        mappings[key] = publicUrl;
+      const ext = path.extname(file).toLowerCase();
+      const stem = path.parse(file).name;
+
+      if (rasterExts.has(ext)) {
+        if (!cwebpPath) {
+          throw new Error(`cwebp is missing (/usr/local/bin/cwebp not found). Cannot process raster file: ${localPath}`);
+        }
+
+        console.log(`Generating WebP variants for ${folder.local}/${file}...`);
+
+        // 1. Full variant (max edge 2560, quality 85)
+        const fullBuffer = convertToWebp(cwebpPath, localPath, 2560, 85);
+        const remoteFullPath = `${folder.remote}/${stem}-full.webp`;
+        console.log(`Uploading ${remoteFullPath}...`);
+        const fullPublicUrl = await uploadBuffer(fullBuffer, remoteFullPath, 'image/webp');
+
+        // 2. Thumb variant (max edge 720, quality 75)
+        const thumbBuffer = convertToWebp(cwebpPath, localPath, 720, 75);
+        const remoteThumbPath = `${folder.remote}/${stem}-thumb.webp`;
+        console.log(`Uploading ${remoteThumbPath}...`);
+        const thumbPublicUrl = await uploadBuffer(thumbBuffer, remoteThumbPath, 'image/webp');
+
+        if (fullPublicUrl && thumbPublicUrl) {
+          console.log(`Successfully uploaded:`);
+          console.log(`  Full:  ${fullPublicUrl}`);
+          console.log(`  Thumb: ${thumbPublicUrl}`);
+          const key = `/${folder.local.replace('public/', '')}/${file}`;
+          mappings[key] = fullPublicUrl;
+        }
+      } else if (ext === '.svg') {
+        // SVG is not a raster photo: upload it unchanged without generating WebP thumbnails
+        const remotePath = `${folder.remote}/${file}`;
+        console.log(`Uploading SVG ${folder.local}/${file} -> ${remotePath}...`);
+        const fileBuffer = fs.readFileSync(localPath);
+        const publicUrl = await uploadBuffer(fileBuffer, remotePath, 'image/svg+xml');
+        if (publicUrl) {
+          console.log(`Successfully uploaded SVG: ${publicUrl}`);
+          const key = `/${folder.local.replace('public/', '')}/${file}`;
+          mappings[key] = publicUrl;
+        }
+      } else {
+        console.warn(`Skipping unrecognized file type: ${localPath}`);
       }
     }
   }
@@ -110,15 +197,9 @@ async function main() {
   console.log('\n--- UPLOAD COMPLETE ---');
   console.log('Use the following URL mappings:');
   console.log(JSON.stringify(mappings, null, 2));
-
-  // Write mapping log for reference
-  fs.writeFileSync(
-    path.resolve(process.cwd(), 'scripts/upload-mappings.json'),
-    JSON.stringify(mappings, null, 2)
-  );
-  console.log('\nMappings saved to scripts/upload-mappings.json');
 }
 
 main().catch(err => {
   console.error('Upload script failed:', err);
+  process.exit(1);
 });

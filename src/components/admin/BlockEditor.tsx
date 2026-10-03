@@ -10,6 +10,7 @@ import TextAlign from '@tiptap/extension-text-align'
 import { Node } from '@tiptap/core'
 import { embedSrcFromUrl } from '../../lib/embedUrl'
 import { supabase } from '../../lib/supabase'
+import { createGalleryPhotoVariants } from '../../lib/imageOptimization'
 
 // 1. Audio Custom Node
 const AudioNode = Node.create({
@@ -391,17 +392,28 @@ export function BlockEditor({ initialContent, onChange }: { initialContent: stri
   // Upload Single Image
   async function handleImageUpload(file: File) {
     if (!editor) return
-    const fileName = `${Date.now()}-${file.name}`
     try {
-      const { data, error } = await supabase.storage
-        .from('public-media')
-        .upload(`uploads/${fileName}`, file, { upsert: true })
+      const { fullBlob, thumbBlob, fullFilename, thumbFilename } = await createGalleryPhotoVariants(file, { folder: 'uploads' })
 
-      if (error) throw error
+      const { data: fullData, error: fullErr } = await supabase.storage
+        .from('public-media')
+        .upload(fullFilename, fullBlob, {
+          contentType: 'image/webp',
+          upsert: true
+        })
+      if (fullErr) throw fullErr
+
+      const { error: thumbErr } = await supabase.storage
+        .from('public-media')
+        .upload(thumbFilename, thumbBlob, {
+          contentType: 'image/webp',
+          upsert: true
+        })
+      if (thumbErr) throw thumbErr
 
       const publicUrl = supabase.storage
         .from('public-media')
-        .getPublicUrl(data.path).data.publicUrl
+        .getPublicUrl(fullData.path).data.publicUrl
 
       executeCommand(() => {
         editor.chain().setImage({ src: publicUrl, alt: 'Blog Image' }).run()
@@ -418,17 +430,28 @@ export function BlockEditor({ initialContent, onChange }: { initialContent: stri
     
     for (let i = 0; i < files.length; i++) {
       const file = files[i]
-      const fileName = `${Date.now()}-${i}-${file.name}`
       try {
-        const { data, error } = await supabase.storage
-          .from('public-media')
-          .upload(`uploads/${fileName}`, file, { upsert: true })
+        const { fullBlob, thumbBlob, fullFilename, thumbFilename } = await createGalleryPhotoVariants(file, { folder: 'uploads' })
 
-        if (error) throw error
+        const { data: fullData, error: fullErr } = await supabase.storage
+          .from('public-media')
+          .upload(fullFilename, fullBlob, {
+            contentType: 'image/webp',
+            upsert: true
+          })
+        if (fullErr) throw fullErr
+
+        const { error: thumbErr } = await supabase.storage
+          .from('public-media')
+          .upload(thumbFilename, thumbBlob, {
+            contentType: 'image/webp',
+            upsert: true
+          })
+        if (thumbErr) throw thumbErr
 
         const publicUrl = supabase.storage
           .from('public-media')
-          .getPublicUrl(data.path).data.publicUrl
+          .getPublicUrl(fullData.path).data.publicUrl
         uploadedUrls.push(publicUrl)
       } catch (err: any) {
         console.error('Gallery file upload failed:', err.message)

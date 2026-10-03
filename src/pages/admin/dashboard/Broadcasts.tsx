@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../../../lib/supabase'
 import { Button } from '../../../components/Button'
+import { createGalleryPhotoVariants } from '../../../lib/imageOptimization'
 
 interface HeroBlock {
   type: 'hero'
@@ -279,17 +280,28 @@ export function BroadcastsManager() {
 
   // Upload artwork / flyer to storage bucket
   async function handleMediaUpload(idx: number, file: File, field: 'coverImageUrl' | 'artworkUrl') {
-    const fileName = `${Date.now()}-${file.name}`
     try {
-      const { data, error } = await supabase.storage
-        .from('public-media')
-        .upload(`campaigns/${fileName}`, file, { upsert: true })
+      const { fullBlob, thumbBlob, fullFilename, thumbFilename } = await createGalleryPhotoVariants(file, { folder: 'campaigns' })
 
-      if (error) throw error
+      const { data: fullData, error: fullErr } = await supabase.storage
+        .from('public-media')
+        .upload(fullFilename, fullBlob, {
+          contentType: 'image/webp',
+          upsert: true
+        })
+      if (fullErr) throw fullErr
+
+      const { error: thumbErr } = await supabase.storage
+        .from('public-media')
+        .upload(thumbFilename, thumbBlob, {
+          contentType: 'image/webp',
+          upsert: true
+        })
+      if (thumbErr) throw thumbErr
 
       const publicUrl = supabase.storage
         .from('public-media')
-        .getPublicUrl(data.path).data.publicUrl
+        .getPublicUrl(fullData.path).data.publicUrl
 
       updateBlock(idx, { [field]: publicUrl })
     } catch (err: any) {

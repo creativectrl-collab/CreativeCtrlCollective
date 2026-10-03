@@ -115,17 +115,46 @@ export async function compressImage(
   })
 }
 
+export interface PhotoVariantsOptions {
+  folder?: string
+  fullMaxEdge?: number
+}
+
 /**
- * Creates both Full (zoom-ready, ~1MB-3MB) and Thumbnail (~50KB-90KB) variants
- * for a gallery image upload.
+ * Creates both Full (zoom-ready) and Thumbnail (~50KB-90KB) variants
+ * for an image upload. Supports custom target folder and full-image max edge.
  */
-export async function createGalleryPhotoVariants(file: File) {
+export async function createGalleryPhotoVariants(
+  file: File,
+  optionsOrFolder?: PhotoVariantsOptions | string,
+  legacyFullMaxEdge?: number
+) {
+  let folder = 'gallery'
+  let fullMaxEdge = 2560
+
+  if (typeof optionsOrFolder === 'string') {
+    folder = optionsOrFolder
+    if (typeof legacyFullMaxEdge === 'number') {
+      fullMaxEdge = legacyFullMaxEdge
+    }
+  } else if (optionsOrFolder && typeof optionsOrFolder === 'object') {
+    if (optionsOrFolder.folder !== undefined) {
+      folder = optionsOrFolder.folder
+    }
+    if (optionsOrFolder.fullMaxEdge !== undefined) {
+      fullMaxEdge = optionsOrFolder.fullMaxEdge
+    }
+  }
+
+  // Strip trailing slashes from folder
+  folder = folder.replace(/\/+$/, '')
+
   const baseId = `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`
 
-  // 1. Full zoomable version (max 2560px, WebP quality 0.85)
+  // 1. Full zoomable version (default max 2560px or custom fullMaxEdge, WebP quality 0.85)
   const fullBlob = await compressImage(file, {
-    maxWidth: 2560,
-    maxHeight: 2560,
+    maxWidth: fullMaxEdge,
+    maxHeight: fullMaxEdge,
     quality: 0.85,
     format: 'image/webp'
   })
@@ -141,7 +170,8 @@ export async function createGalleryPhotoVariants(file: File) {
   return {
     fullBlob,
     thumbBlob,
-    fullFilename: `gallery/${baseId}-full.webp`,
-    thumbFilename: `gallery/${baseId}-thumb.webp`
+    fullFilename: `${folder}/${baseId}-full.webp`,
+    thumbFilename: `${folder}/${baseId}-thumb.webp`
   }
 }
+

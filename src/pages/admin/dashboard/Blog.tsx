@@ -3,6 +3,7 @@ import { supabase } from '../../../lib/supabase'
 import { Button } from '../../../components/Button'
 import { BlockEditor } from '../../../components/admin/BlockEditor'
 import { PostBody } from '../../../components/PostBody'
+import { createGalleryPhotoVariants } from '../../../lib/imageOptimization'
 
 // Helper to calculate reading time
 function getReadingTime(contentJsonStr: string): number {
@@ -55,10 +56,24 @@ export function BlogManager() {
 
     let cover_image_url = ''
     if (file) {
-      const fileName = `${Math.random()}-${file.name}`
-      const { data, error } = await supabase.storage.from('public-media').upload(fileName, file)
-      if (error) { alert('Upload failed'); return }
-      cover_image_url = supabase.storage.from('public-media').getPublicUrl(data.path).data.publicUrl
+      const { fullBlob, thumbBlob, fullFilename, thumbFilename } = await createGalleryPhotoVariants(file, { folder: 'blog' })
+      const { data: fullData, error: fullErr } = await supabase.storage
+        .from('public-media')
+        .upload(fullFilename, fullBlob, {
+          contentType: 'image/webp',
+          upsert: true
+        })
+      if (fullErr) { alert('Upload failed'); return }
+
+      const { error: thumbErr } = await supabase.storage
+        .from('public-media')
+        .upload(thumbFilename, thumbBlob, {
+          contentType: 'image/webp',
+          upsert: true
+        })
+      if (thumbErr) { alert('Upload failed'); return }
+
+      cover_image_url = supabase.storage.from('public-media').getPublicUrl(fullData.path).data.publicUrl
     }
 
     const { data: newPost, error } = await supabase.from('posts').insert({
